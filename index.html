@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UV Guard Index | Analisis UV Index Komprehensif</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-sun"></i>
+                <span>UV Guard <strong>Index</strong></span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#analysis" class="nav-link"><i class="fas fa-chart-line"></i> Analisis</a>
+                <a href="#impact" class="nav-link"><i class="fas fa-leaf"></i> Dampak</a>
+                <a href="#recommendation" class="nav-link"><i class="fas fa-shield-alt"></i> Rekomendasi</a>
+                <a href="#education" class="nav-link"><i class="fas fa-graduation-cap"></i> Edukasi</a>
+            </div>
+            <div class="nav-time">
+                <i class="fas fa-clock"></i>
+                <span id="currentTime">--:--:--</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Analisis UV Index</span>
+                <br>
+                <span class="hero-subtitle">Real-time dengan Prediksi Matematis & Rekomendasi Kesehatan</span>
+            </h1>
+            <p class="hero-description">
+                Platform komprehensif untuk monitoring UV Index, analisis turunan matematika, 
+                dan rekomendasi perlindungan berdasarkan lokasi Anda.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <i class="fas fa-satellite"></i>
+                    <div>
+                        <h3>API Real-time</h3>
+                        <p>OpenWeatherMap + BMKG</p>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-calculator"></i>
+                    <div>
+                        <h3>Analisis Turunan</h3>
+                        <p>Konsep Kalkulus</p>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <div>
+                        <h3>38 Provinsi</h3>
+                        <p>Coverage Indonesia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="uv-animation">
+                <!-- Animasi Matahari Modern -->
+                <div class="sun-animation">
+                    <div class="sun-core">
+                        <div class="sun-inner"></div>
+                    </div>
+                    <div class="sun-rays">
+                        <div class="ray ray-1"></div>
+                        <div class="ray ray-2"></div>
+                        <div class="ray ray-3"></div>
+                        <div class="ray ray-4"></div>
+                        <div class="ray ray-5"></div>
+                        <div class="ray ray-6"></div>
+                        <div class="ray ray-7"></div>
+                        <div class="ray ray-8"></div>
+                    </div>
+                    <div class="sun-pulse"></div>
+                </div>
+                <div class="uv-levels">
+                    <div class="level low">Rendah 0-2</div>
+                    <div class="level moderate">Sedang 3-5</div>
+                    <div class="level high">Tinggi 6-7</div>
+                    <div class="level very-high">Sangat Tinggi 8-10</div>
+                    <div class="level extreme">Ekstrem 11+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Section 1: Data Input & Real-time Display -->
+        <section class="section" id="data-input">
+            <div class="section-header">
+                <h2><i class="fas fa-satellite-dish"></i> Koneksi Data Real-time</h2>
+                <div class="api-status" id="apiStatus">
+                    <span class="status-indicator active"></span>
+                    <span>API Connected</span>
+                </div>
+            </div>
+
+            <div class="grid-2col">
+                <!-- Location Selection -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-map-marker-alt"></i> Pemilihan Lokasi</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Method 1: Province Selection -->
+                        <div class="input-group">
+                            <label><i class="fas fa-flag"></i> Pilih Provinsi:</label>
+                            <select id="provinceSelect" class="select-input">
+                                <option value="">-- Pilih Provinsi --</option>
+                                <!-- Provinces will be populated by JavaScript -->
+                            </select>
+                            <div class="input-help">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Data UV akan disesuaikan dengan ibu kota provinsi</span>
+                            </div>
+                        </div>
+
+                        <!-- Method 2: City Input -->
+                        <div class="input-group">
+                            <label><i class="fas fa-city"></i> Cari Kota:</label>
+                            <div class="input-with-button">
+                                <input type="text" id="cityInput" class="text-input" 
+                                       placeholder="Contoh: Jakarta, Surabaya, Bandung...">
+                                <button id="searchCity" class="btn-icon">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Method 3: Coordinates Input -->
+                        <div class="input-group">
+                            <label><i class="fas fa-globe-asia"></i> Koordinat Manual:</label>
+                            <div class="coordinate-inputs">
+                                <div class="coord-group">
+                                    <label>Latitude:</label>
+                                    <input type="number" id="latInput" class="coord-input" 
+                                           step="0.0001" placeholder="-6.2088">
+                                </div>
+                                <div class="coord-group">
+                                    <label>Longitude:</label>
+                                    <input type="number" id="lonInput" class="coord-input" 
+                                           step="0.0001" placeholder="106.8456">
+                                </div>
+                            </div>
+                            <button id="useCoordsBtn" class="btn-secondary" style="margin-top: 10px;">
+                                <i class="fas fa-map-marker-alt"></i> Gunakan Koordinat
+                            </button>
+                            <div class="input-help">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Lat = Garis Lintang, Lon = Garis Bujur</span>
+                            </div>
+                        </div>
+
+                        <!-- Method 4: GPS Detection -->
+                        <div class="input-group">
+                            <label><i class="fas fa-location-crosshairs"></i> Deteksi Otomatis:</label>
+                            <button id="detectLocation" class="btn-primary">
+                                <i class="fas fa-satellite"></i> Deteksi Lokasi Saya
+                            </button>
+                            <div class="location-status" id="locationStatus">
+                                <i class="fas fa-clock"></i>
+                                <span>Status: Menunggu input lokasi</span>
+                            </div>
+                        </div>
+
+                        <!-- API Information -->
+                        <div class="api-info">
+                            <div class="api-footer-disclaimer">
+                                <h5><i class="fas fa-database"></i> Catatan Sumber Data</h5>
+                                <p>
+                                    Data UV Index dan informasi cuaca diperoleh dari berbagai penyedia API global (OpenWeatherMap, Visual Crossing, WeatherAPI) untuk memastikan redundansi dan akurasi terbaik. 
+                                </p>
+                                <p class="small-text">
+                                    <strong>Penting:</strong> Aplikasi ini bersifat analitis. Informasi UV Index adalah prediksi dan tidak boleh menggantikan penilaian profesional, terutama dalam kondisi cuaca ekstrem. Selalu perhatikan kondisi lokal Anda.
+                                </p>
+                            </div>
+                            <h4><i class="fas fa-code"></i> API yang Digunakan:</h4>
+                            <div class="api-list">
+                                <div class="api-item">
+                                    <img src="openweathermap-logo.png" 
+                                         alt="OpenWeatherMap" class="api-logo">
+                                    <div>
+                                        <strong>OpenWeatherMap</strong>
+                                        <small>Data cuaca & UV real-time</small>
+                                    </div>
+                                </div>
+                                <div class="api-item">
+                                    <img src="weatherAPI-logo.png" 
+                                         alt="weatherAPI" class="api-logo">
+                                    <div>
+                                        <strong>weatherAPI</strong>
+                                        <small>Data cuaca & UV real-time</small>
+                                    </div>
+                                </div>
+                                <div class="api-item">
+                                    <img src="visualcrossing-logo.png" 
+                                         alt="visualcrossing" class="api-logo">
+                                    <div>
+                                        <strong>visualcrossing</strong>
+                                        <small>Data cuaca & UV real-time</small>
+                                    </div>
+                                </div>
+                                <div class="api-item">
+                                    <img src="BMKG-logo.png" 
+                                         alt="BMKG" class="api-logo">
+                                    <div>
+                                        <strong>BMKG Indonesia</strong>
+                                       <small>Data lokal Indonesia</small>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                <!-- Real-time UV Display -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tachometer-alt"></i> UV Index Real-time</h3>
+                        <button id="refreshData" class="btn-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="uv-meter-large">
+                            <div class="uv-value-display">
+                                <div class="uv-value" id="currentUV">0.0</div>
+                                <div class="uv-unit">UV Index</div>
+                            </div>
+                            <div class="uv-level-display">
+                                <div class="level-badge" id="uvLevel">-</div>
+                                <div class="level-description" id="uvDescription">
+                                    Menunggu data...
+                                </div>
+                            </div>
+                            <div class="uv-gauge">
+                                <div class="gauge-track">
+                                    <div class="gauge-fill" id="uvGauge"></div>
+                                </div>
+                                <div class="gauge-labels">
+                                    <span>0</span>
+                                    <span>3</span>
+                                    <span>6</span>
+                                    <span>8</span>
+                                    <span>11</span>
+                                    <span>15+</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="weather-info">
+                            <div class="info-row">
+                                <div class="info-item">
+                                    <i class="fas fa-map-pin"></i>
+                                    <div>
+                                        <small>Lokasi</small>
+                                        <strong id="locationName">-</strong>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    <div>
+                                        <small>Suhu</small>
+                                        <strong id="temperature">- °C</strong>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-wind"></i>
+                                    <div>
+                                        <small>Kondisi</small>
+                                        <strong id="weatherCondition">-</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-item">
+                                    <i class="fas fa-tint"></i>
+                                    <div>
+                                        <small>Kelembapan</small>
+                                        <strong id="humidity">- %</strong>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-temperature-high"></i>
+                                    <div>
+                                        <small>Terasa Seperti</small>
+                                        <strong id="feelsLikeText">- °C</strong>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-sun"></i>
+                                    <div>
+                                        <small>Sunrise</small>
+                                        <strong id="sunriseText">-</strong>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-moon"></i>
+                                    <div>
+                                        <small>Sunset</small>
+                                        <strong id="sunsetText">-</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Weather Info -->
+                        <div class="additional-weather">
+    <div class="weather-detail">
+        <span><i class="fas fa-tachometer-alt"></i> Tekanan:</span>
+        <strong id="pressureText">- hPa</strong>
+    </div>
+    <div class="weather-detail">
+        <span><i class="fas fa-wind"></i> Angin:</span>
+        <strong id="windText">- m/s</strong>
+    </div>
+    <div class="weather-detail">
+        <span><i class="fas fa-cloud"></i> Awan:</span>
+        <strong id="cloudsText">- %</strong>
+    </div>
+    <div class="weather-detail">
+        <span><i class="fas fa-globe-asia"></i> Koordinat:</span>
+        <strong id="coordinatesText">-6.2088, 106.8456</strong>
+    </div>
+    
+    <!-- ELEMEN BARU YANG DITAMBAHKAN -->
+    <div class="weather-detail">
+        <span><i class="fas fa-clock"></i> Status Waktu:</span>
+        <strong id="timeStatus">-</strong>
+    </div>
+    <div class="weather-detail">
+        <span><i class="fas fa-globe"></i> Zona Waktu:</span>
+        <strong id="timezoneInfo">-</strong>
+    </div>
+    <div class="weather-detail">
+        <span><i class="fas fa-sun"></i> Periode:</span>
+        <strong id="dayNightIndicator">-</strong>
+    </div>
+</div>
+
+
+                        <!-- Data Source Info -->
+                        <div class="data-source">
+                            <i class="fas fa-database"></i>
+                            <span>Data diperoleh dari: </span>
+                            <strong id="dataSource">-</strong>
+                            <span class="last-update">Update: <span id="lastUpdate">-</span></span>
+                        </div>
+
+                        <!-- Control Buttons -->
+                        <div class="control-buttons">
+                            <button id="fetchData" class="btn-primary">
+                                <i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang
+                            </button>
+                            <button id="startMonitoring" class="btn-secondary">
+                                <i class="fas fa-play-circle"></i> Mulai Monitoring
+                            </button>
+                            <button id="stopMonitoring" class="btn-danger" disabled>
+                                <i class="fas fa-stop-circle"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How UV Index is Calculated -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-calculator"></i> Cara Perolehan UV Index</h3>
+                </div>
+                <div class="card-body">
+                    <div class="calculation-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Pengukuran Radiasi</h4>
+                                <p>Alat spektroradiometer mengukur intensitas radiasi UV di berbagai panjang gelombang (290-400 nm)</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Faktor Koreksi</h4>
+                                <p>Disesuaikan dengan: ketinggian, awan, ozon, musim, dan waktu hari</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Skala WHO</h4>
+                                <p>Ditampilkan dalam skala 0-15+ sesuai standar World Health Organization</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Mathematical Analysis -->
+        <section class="section" id="analysis">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> Analisis Matematis (Konsep Turunan)</h2>
+                <div class="section-subtitle">
+                    Pemodelan dan prediksi menggunakan kalkulus diferensial
+                </div>
+            </div>
+
+            <div class="grid-3col">
+                <!-- Derivative Analysis -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-sliders-h"></i> Turunan & Laju Perubahan</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="math-display">
+                            <div class="equation">
+                                Ds - Do/Do
+                            </div>
+                            <div class="equation-desc">
+                                Ds = Data Sesudah.
+                                Do = Data Sebelum.
+                                Turunan pertama menunjukkan laju perubahan instant
+                            </div>
+                            <div class="current-rate">
+                                <div class="rate-label">Laju saat ini:</div>
+                                <div class="rate-value" id="currentRate">0.00</div>
+                                <div class="rate-unit">unit/jam</div>
+                            </div>
+                            <div class="trend-indicator" id="trendIndicator">
+                                <i class="fas fa-arrow-right"></i>
+                                <span>Stabil</span>
+                            </div>
+                            <div class="rate-interpretation" id="rateInterpretation">
+                                Tidak ada perubahan signifikan
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Predictions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-crystal-ball"></i> Prediksi & Optimasi</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="predictions">
+                            <div class="prediction-item">
+                                <div class="pred-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="pred-content">
+                                    <div class="pred-label">Puncak UV Hari Ini</div>
+                                    <div class="pred-value" id="peakTime">--:--</div>
+                                </div>
+                            </div>
+                            <div class="prediction-item">
+                                <div class="pred-icon">
+                                    <i class="fas fa-sun"></i>
+                                </div>
+                                <div class="pred-content">
+                                    <div class="pred-label">Nilai Maksimum</div>
+                                    <div class="pred-value" id="peakUV">-</div>
+                                </div>
+                            </div>
+                            <div class="prediction-item">
+                                <div class="pred-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="pred-content">
+                                    <div class="pred-label">Waktu Aman (UV < 3)</div>
+                                    <div class="pred-value" id="safeTime">--:--</div>
+                                </div>
+                            </div>
+                            <div class="prediction-item">
+                                <div class="pred-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="pred-content">
+                                    <div class="pred-label">Durasi Berjemur Aman</div>
+                                    <div class="pred-value" id="sunbathDuration">- menit</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-area"></i> Visualisasi Data</h3>
+                    <div class="chart-controls">
+                        <select id="chartRange" class="select-input small">
+                            <option value="6">6 Jam Terakhir</option>
+                            <option value="12" selected>12 Jam Terakhir</option>
+                            <option value="24">24 Jam Terakhir</option>
+                            <option value="48">2 Hari Terakhir</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="uvChart"></canvas>
+                    </div>
+                    
+                    <!-- History Table -->
+                    <div class="history-table">
+                        <h4><i class="fas fa-history"></i> Riwayat Data Terbaru</h4>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Waktu</th>
+                                        <th>UV Index</th>
+                                        <th>Laju Perubahan</th>
+                                        <th>Suhu</th>
+                                        <th>Kelembapan</th>
+                                        <th>Level</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyBody">
+                                    <tr class="no-data">
+                                        <td colspan="7">
+                                            <i class="fas fa-database"></i>
+                                            <p>Tidak ada data riwayat. Ambil data UV terlebih dahulu.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-actions">
+                            <button id="exportDataBtn" class="btn-secondary">
+                                <i class="fas fa-download"></i> Ekspor Data
+                            </button>
+                            <button id="clearHistoryBtn" class="btn-danger">
+                                <i class="fas fa-trash"></i> Hapus Riwayat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: UV Impact on Biology & Environment -->
+        <section class="section" id="impact">
+            <div class="section-header">
+                <h2><i class="fas fa-leaf"></i> Dampak UV pada Biologi & Lingkungan</h2>
+                <div class="section-subtitle">
+                    Efek radiasi ultraviolet terhadap kehidupan dan ekosistem
+                </div>
+            </div>
+
+            <div class="grid-2col">
+                <!-- Biological Impact -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-dna"></i> Dampak pada Biologi</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="impact-grid">
+                            <div class="impact-item positive">
+                                <div class="impact-icon">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <div class="impact-content">
+                                    <h4>Manfaat Positif</h4>
+                                    <ul>
+                                        <li><strong>Vitamin D Synthesis</strong>: UV-B membantu produksi vitamin D3</li>
+                                        <li><strong>Phototherapy</strong>: Pengobatan psoriasis, eksim, vitiligo</li>
+                                        <li><strong>Mood Enhancement</strong>: Meningkatkan serotonin dan melatonin</li>
+                                        <li><strong>Sterilization</strong>: UV-C membunuh bakteri dan virus</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="impact-item negative">
+                                <div class="impact-icon">
+                                    <i class="fas fa-minus-circle"></i>
+                                </div>
+                                <div class="impact-content">
+                                    <h4>Risiko Negatif</h4>
+                                    <ul>
+                                        <li><strong>DNA Damage</strong>: Mutasi sel dan kanker kulit</li>
+                                        <li><strong>Photoaging</strong>: Penuaan dini dan keriput</li>
+                                        <li><strong>Cataracts</strong>: Katarak dan degenerasi makula</li>
+                                        <li><strong>Immune Suppression</strong>: Melemahkan sistem imun</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skin Type Specific Effects -->
+                        <div class="skin-type-effects">
+                            <h4><i class="fas fa-user-md"></i> Efek Berdasarkan Tipe Kulit (Fitzpatrick Scale)</h4>
+                            <div class="skin-types">
+                                <div class="skin-type" data-type="I">
+                                    <div class="skin-color" style="background: #ffdbac;"></div>
+                                    <div class="skin-info">
+                                        <strong>Tipe I</strong>
+                                        <small>Terbakar dalam 10 menit</small>
+                                    </div>
+                                </div>
+                                <div class="skin-type" data-type="II">
+                                    <div class="skin-color" style="background: #f1c27d;"></div>
+                                    <div class="skin-info">
+                                        <strong>Tipe II</strong>
+                                        <small>15-20 menit</small>
+                                    </div>
+                                </div>
+                                <div class="skin-type" data-type="III">
+                                    <div class="skin-color" style="background: #e0ac69;"></div>
+                                    <div class="skin-info">
+                                        <strong>Tipe III</strong>
+                                        <small>20-30 menit</small>
+                                    </div>
+                                </div>
+                                <div class="skin-type" data-type="IV">
+                                    <div class="skin-color" style="background: #c68642;"></div>
+                                    <div class="skin-info">
+                                        <strong>Tipe IV</strong>
+                                        <small>40-50 menit</small>
+                                    </div>
+                                </div>
+                                <div class="skin-type" data-type="V">
+                                    <div class="skin-color" style="background: #8d5524;"></div>
+                                    <div class="skin-info">
+                                        <strong>Tipe V</strong>
+                                        <small>60+ menit</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Environmental Impact -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tree"></i> Dampak pada Lingkungan</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="environmental-impact">
+                            <div class="eco-item">
+                                <div class="eco-icon">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <div class="eco-content">
+                                    <h4>Pertumbuhan Tanaman</h4>
+                                    <p>UV-B mempengaruhi fotosintesis, morfologi, dan produksi metabolit sekunder</p>
+                                </div>
+                            </div>
+                            <div class="eco-item">
+                                <div class="eco-icon">
+                                    <i class="fas fa-water"></i>
+                                </div>
+                                <div class="eco-content">
+                                    <h4>Ekosistem Perairan</h4>
+                                    <p>Penetrasi UV mempengaruhi fitoplankton dan rantai makanan akuatik</p>
+                                </div>
+                            </div>
+                            <div class="eco-item">
+                                <div class="eco-icon">
+                                    <i class="fas fa-industry"></i>
+                                </div>
+                                <div class="eco-content">
+                                    <h4>Degradasi Material</h4>
+                                    <p>UV mempercepat degradasi plastik, cat, dan material konstruksi</p>
+                                </div>
+                            </div>
+                            <div class="eco-item">
+                                <div class="eco-icon">
+                                    <i class="fas fa-cloud-sun"></i>
+                                </div>
+                                <div class="eco-content">
+                                    <h4>Kualitas Udara</h4>
+                                    <p>UV berperan dalam pembentukan ozon troposfer dan smog fotokimia</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ozone Layer Info -->
+                        <div class="ozone-info">
+                            <h4><i class="fas fa-layer-group"></i> Lapisan Ozon & UV</h4>
+                            <div class="ozone-status">
+                                <div class="ozone-meter">
+                                    <div class="ozone-fill" style="width: 95%;"></div>
+                                </div>
+                                <div class="ozone-details">
+                                    <div>
+                                        <strong>95%</strong>
+                                        <small>Ketebalan Ozon</small>
+                                    </div>
+                                    <div>
+                                        <strong>+1.5%</strong>
+                                        <small>Perbaikan/tahun</small>
+                                    </div>
+                                    <div>
+                                        <strong>2060</strong>
+                                        <small>Pemulihan penuh</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="ozone-note">
+                                <i class="fas fa-info-circle"></i>
+                                Protokol Montreal 1987 berhasil mengurangi kerusakan ozon
+                            </p>
+                            <div class="montreal-protocol-info">
+                            <h5><i class="fas fa-file-contract"></i> Apa itu Protokol Montreal?</h5>
+                                <p>
+                                Protokol Montreal adalah perjanjian internasional yang ditandatangani pada tahun 1987 untuk menghentikan produksi dan impor zat-zat perusak ozon (ODS) seperti Chlorofluorocarbons (CFCs) dan Halons. 
+                                </p>
+                                <p>
+                                Tujuan utamanya adalah melindungi lapisan ozon stratosfer bumi yang menyerap sebagian besar radiasi ultraviolet (UV) B. Keberhasilan protokol ini dianggap sebagai salah satu contoh kerjasama lingkungan global yang paling sukses.
+                                </p>
+                                <p>
+                                Berkat upaya global melalui protokol ini, para ilmuwan memproyeksikan bahwa lapisan ozon akan pulih sepenuhnya ke tingkat tahun 1980-an pada sekitar pertengahan abad ini (2050-2065), meskipun pemulihan di beberapa wilayah kutub mungkin memakan waktu lebih lama.
+                                </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Sunbathing Duration & Activity Schedule -->
+        <section class="section" id="sunbathing">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Durasi Berjemur & Jadwal Aktivitas</h2>
+                <div class="section-subtitle">
+                    Rekomendasi berdasarkan UV Index dan tipe kulit
+                </div>
+            </div>
+
+            <div class="grid-2col">
+                <!-- Sunbathing Calculator -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calculator"></i> Kalkulator Berjemur</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="calculator">
+                            <div class="calc-inputs">
+                                <div class="input-group">
+                                    <label><i class="fas fa-user"></i> Tipe Kulit:</label>
+                                    <select id="skinTypeSelect" class="select-input">
+                                        <option value="I">Tipe I - Sangat putih, mudah terbakar</option>
+                                        <option value="II">Tipe II - Putih, mudah terbakar</option>
+                                        <option value="III" selected>Tipe III - Coklat muda, terbakar sedang</option>
+                                        <option value="IV">Tipe IV - Coklat, jarang terbakar</option>
+                                        <option value="V">Tipe V - Coklat gelap, sangat jarang terbakar</option>
+                                        <option value="VI">Tipe VI - Hitam, tidak pernah terbakar</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label><i class="fas fa-sun"></i> UV Index Saat Ini:</label>
+                                    <input type="number" id="calcUV" class="text-input" value="5" min="0" max="15" step="0.1">
+                                </div>
+                                <div class="input-group">
+                                    <label><i class="fas fa-sliders-h"></i> SPF Sunscreen:</label>
+                                    <select id="spfSelect" class="select-input">
+                                        <option value="0">Tidak pakai sunscreen</option>
+                                        <option value="15">SPF 15</option>
+                                        <option value="30" selected>SPF 30</option>
+                                        <option value="50">SPF 50</option>
+                                        <option value="100">SPF 100</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="calc-results">
+                                <div class="result-item">
+                                    <div class="result-label">Durasi Aman Berjemur:</div>
+                                    <div class="result-value" id="safeSunbathTime">-</div>
+                                    <div class="result-unit">menit</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-label">Vitamin D Optimal:</div>
+                                    <div class="result-value" id="vitaminDTime">-</div>
+                                    <div class="result-unit">menit</div>
+                                </div>
+                                <div class="result-item warning">
+                                    <div class="result-label">Risiko Sunburn:</div>
+                                    <div class="result-value" id="burnRisk">-</div>
+                                    <div class="result-unit"></div>
+                                </div>
+                            </div>
+                            <button id="calculateSunbath" class="btn-primary">
+                                <i class="fas fa-calculator"></i> Hitung Durasi
+                            </button>
+                        </div>
+
+                        <div class="vitamin-d-info">
+                            <h4><i class="fas fa-pills"></i> Produksi Vitamin D</h4>
+                            <p>Paparan 15-30 menit sinar matahari (tanpa sunscreen) dapat menghasilkan 10,000-25,000 IU vitamin D</p>
+                            <div class="vitamin-benefits">
+                                <span><i class="fas fa-bone"></i> Kesehatan tulang</span>
+                                <span><i class="fas fa-shield-virus"></i> Imunitas</span>
+                                <span><i class="fas fa-brain"></i> Fungsi kognitif</span>
+                                <span><i class="fas fa-heart"></i> Kesehatan jantung</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Schedule -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Jadwal Aktivitas Outdoor</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="schedule">
+                            <div class="time-slots">
+                                <div class="time-slot" data-time="06:00-08:00">
+                                    <div class="slot-time">06:00 - 08:00</div>
+                                    <div class="slot-uv">UV: 0-2</div>
+                                    <div class="slot-activities">
+                                        <i class="fas fa-running"></i> Lari pagi
+                                        <i class="fas fa-walking"></i> Jalan sehat
+                                        <i class="fas fa-dumbbell"></i> Olahraga
+                                    </div>
+                                    <div class="slot-recommendation">
+                                        <span class="badge safe">Aman</span>
+                                        SPF 15+ jika >1 jam
+                                    </div>
+                                </div>
+                                <div class="time-slot" data-time="08:00-10:00">
+                                    <div class="slot-time">08:00 - 10:00</div>
+                                    <div class="slot-uv">UV: 2-4</div>
+                                    <div class="slot-activities">
+                                        <i class="fas fa-bicycle"></i> Bersepeda
+                                        <i class="fas fa-golf-ball"></i> Golf
+                                        <i class="fas fa-fish"></i> Memancing
+                                    </div>
+                                    <div class="slot-recommendation">
+                                        <span class="badge moderate">Hati-hati</span>
+                                        Gunakan topi & SPF 30
+                                    </div>
+                                </div>
+                                <div class="time-slot warning" data-time="10:00-14:00">
+                                    <div class="slot-time">10:00 - 14:00</div>
+                                    <div class="slot-uv">UV: 5-10</div>
+                                    <div class="slot-activities">
+                                        <i class="fas fa-umbrella-beach"></i> Hindari outdoor
+                                        <i class="fas fa-home"></i> Aktivitas indoor
+                                    </div>
+                                    <div class="slot-recommendation">
+                                        <span class="badge danger">Bahaya</span>
+                                        Tetap di tempat teduh
+                                    </div>
+                                </div>
+                                <div class="time-slot" data-time="14:00-16:00">
+                                    <div class="slot-time">14:00 - 16:00</div>
+                                    <div class="slot-uv">UV: 3-6</div>
+                                    <div class="slot-activities">
+                                        <i class="fas fa-swimming-pool"></i> Berenang
+                                        <i class="fas fa-futbol"></i> Sepak bola
+                                        <i class="fas fa-hiking"></i> Hiking
+                                    </div>
+                                    <div class="slot-recommendation">
+                                        <span class="badge moderate">Hati-hati</span>
+                                        SPF 50+ & pakaian lengan panjang
+                                    </div>
+                                </div>
+                                <div class="time-slot safe" data-time="16:00-18:00">
+                                    <div class="slot-time">16:00 - 18:00</div>
+                                    <div class="slot-uv">UV: 0-3</div>
+                                    <div class="slot-activities">
+                                        <i class="fas fa-walking"></i> Jalan sore
+                                        <i class="fas fa-basketball-ball"></i> Basket
+                                        <i class="fas fa-child"></i> Bermain anak
+                                    </div>
+                                    <div class="slot-recommendation">
+                                        <span class="badge safe">Aman</span>
+                                        Waktu terbaik outdoor
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="current-recommendation">
+                                <h4><i class="fas fa-lightbulb"></i> Rekomendasi Saat Ini</h4>
+                                <div class="recommendation-content" id="currentActivityRec">
+                                    Berdasarkan UV Index saat ini, waktu terbaik untuk aktivitas outdoor adalah sore hari.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Sun Benefits & Risks -->
+        <section class="section" id="sun-effects">
+            <div class="section-header">
+                <h2><i class="fas fa-balance-scale"></i> Manfaat & Risiko Sinar Matahari</h2>
+                <div class="section-subtitle">
+                    Dampak positif dan negatif paparan sinar matahari
+                </div>
+            </div>
+
+            <div class="benefits-risks">
+                <div class="benefits">
+                    <h3><i class="fas fa-thumbs-up"></i> Manfaat Positif</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-bone"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Kesehatan Tulang</h4>
+                                <p>Sintesis vitamin D meningkatkan penyerapan kalsium</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Kesehatan Mental</h4>
+                                <p>Meningkatkan serotonin dan mengurangi depresi</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-shield-virus"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Sistem Imun</h4>
+                                <p>Meningkatkan sel T dan respons imun</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Kardiovaskular</h4>
+                                <p>Menurunkan tekanan darah dan risiko jantung</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Siklus Tidur</h4>
+                                <p>Mengatur ritme sirkadian dan melatonin</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Kesehatan Kulit</h4>
+                                <p>Mengobati psoriasis, eksim, dan jerawat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="risks">
+                    <h3><i class="fas fa-thumbs-down"></i> Risiko Negatif</h3>
+                    <div class="risks-grid">
+                        <div class="risk-item">
+                            <div class="risk-icon">
+                                <i class="fas fa-dna"></i>
+                            </div>
+                            <div class="risk-content">
+                                <h4>Kanker Kulit</h4>
+                                <p>Melanoma, karsinoma sel basal dan skuamosa</p>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="risk-content">
+                                <h4>Masalah Mata</h4>
+                                <p>Katarak, pterygium, degenerasi makula</p>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                            <div class="risk-content">
+                                <h4>Penuaan Dini</h4>
+                                <p>Keriput, bintik hitam, elastisitas kulit berkurang</p>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">
+                                <i class="fas fa-temperature-high"></i>
+                            </div>
+                            <div class="risk-content">
+                                <h4>Heat Stroke</h4>
+                                <p>Dehidrasi, kelelahan panas, stroke panas</p>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <div class="risk-content">
+                                <h4>Photosensitivity</h4>
+                                <p>Reaksi dengan obat tertentu</p>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">
+                                <i class="fas fa-cloud-sun"></i>
+                            </div>
+                            <div class="risk-content">
+                                <h4>Lingkungan</h4>
+                                <p>Pemanasan global, perubahan iklim</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card balance-card">
+                <div class="card-body">
+                    <div class="balance-scale">
+                        <div class="scale-left">
+                            <h4><i class="fas fa-sun"></i> Paparan Optimal</h4>
+                            <ul>
+                                <li>15-30 menit/hari (wajah, tangan, kaki)</li>
+                                <li>Jam 10:00 pagi atau 15:00 sore</li>
+                                <li>Tanpa sunscreen untuk vitamin D</li>
+                                <li>3-4 kali per minggu</li>
+                            </ul>
+                        </div>
+                        <div class="scale-center">
+                            <i class="fas fa-balance-scale"></i>
+                            <div class="scale-label">Keseimbangan</div>
+                        </div>
+                        <div class="scale-right">
+                            <h4><i class="fas fa-shield-alt"></i> Proteksi Maksimal</h4>
+                            <ul>
+                                <li>SPF 30+ untuk aktivitas outdoor</li>
+                                <li>Topi lebar dan kacamata hitam UV400</li>
+                                <li>Pakaian UPF 50+ untuk paparan lama</li>
+                                <li>Hindari jam 10:00-14:00</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Recommendations & Protection -->
+        <section class="section" id="recommendation">
+            <div class="section-header">
+                <h2><i class="fas fa-shield-alt"></i> Rekomendasi Perlindungan UV</h2>
+                <div class="section-subtitle">
+                    Panduan lengkap berdasarkan level UV saat ini
+                </div>
+            </div>
+
+            <div class="recommendations-grid" id="recommendationsContainer">
+                <!-- Recommendations will be generated dynamically -->
+                <div class="loading-recommendations">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Menyiapkan rekomendasi...</p>
+                </div>
+            </div>
+
+            <!-- Protection Guide -->
+            <div class="card protection-guide">
+                <div class="card-header">
+                    <h3><i class="fas fa-book-medical"></i> Panduan Perlindungan Lengkap</h3>
+                </div>
+                <div class="card-body">
+                    <div class="protection-steps">
+                        <div class="protection-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Sun Screen</h4>
+                                <p>SPF 30+, broad spectrum, water resistant. Oleskan 30 menit sebelum keluar dan ulang setiap 2 jam</p>
+                            </div>
+                        </div>
+                        <div class="protection-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Pakaian</h4>
+                                <p>Baju lengan panjang, celana panjang, topi bertepi lebar (7-10 cm), kacamata hitam UV400</p>
+                            </div>
+                        </div>
+                        <div class="protection-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Waktu</h4>
+                                <p>Hindari matahari 10:00-14:00. Cari tempat teduh, gunakan payung atau kanopi</p>
+                            </div>
+                        </div>
+                        <div class="protection-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Monitoring</h4>
+                                <p>Pantau UV Index harian, perhatikan kulit setiap bulan, periksa ke dokter kulit tahunan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Educational Content -->
+        <section class="section" id="education">
+            <div class="section-header">
+                <h2><i class="fas fa-graduation-cap"></i> Edukasi UV & Sinar Matahari</h2>
+            </div>
+
+            <div class="educational-content">
+                <div class="edu-card">
+                    <div class="edu-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="edu-content">
+                        <h3>FAQ: Pertanyaan Umum</h3>
+                        <div class="faq-list">
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <strong>Apakah sunscreen menghalangi produksi vitamin D?</strong>
+                                </div>
+                                <div class="faq-answer">
+                                    Sunscreen SPF 30 mengurangi produksi vitamin D sekitar 95-98%. Namun, paparan 15-30 menit tanpa sunscreen sudah cukup untuk produksi vitamin D harian.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <strong>Bisakah UV menembus awan?</strong>
+                                </div>
+                                <div class="faq-answer">
+                                    Ya! 80% UV dapat menembus awan tipis. Bahkan di hari berawan, Anda tetap perlu perlindungan.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <strong>Apakah semua sunscreen sama?</strong>
+                                </div>
+                                <div class="faq-answer">
+                                    Tidak. Pilih "broad spectrum" yang melindungi dari UVA dan UVB. Chemical vs physical sunscreen memiliki mekanisme berbeda.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edu-card">
+                    <div class="edu-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="edu-content">
+                        <h3>Data Historis & Tren</h3>
+                        <div class="history-chart" style="height: 400px;">
+                            <canvas id="historyChart"></canvas>
+                        </div>
+                        <div class="trend-info">
+                            <p><i class="fas fa-chart-line"></i> <strong>Tren UV Indonesia (2018-2025):</strong> Meningkat 2-4% per tahun (20-40% per dekade) akibat perubahan iklim dan penipisan ozon.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-sun"></i> UV Guard Index</h3>
+                <p>Platform analisis UV Index komprehensif dengan pendekatan matematis dan rekomendasi kesehatan berbasis data real-time.</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> Sumber Data</h3>
+                <ul>
+                    <li><a href="https://openweathermap.org/api" target="_blank">OpenWeatherMap API</a></li>
+                    <li><a href="https://www.bmkg.go.id/" target="_blank">BMKG Indonesia</a></li>
+                    <li><a href="https://www.who.int/uv/publications/en/" target="_blank">WHO UV Guidelines</a></li>
+                    <li><a href="https://www.epa.gov/sunsafety" target="_blank">EPA Sun Safety</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-stethoscope"></i> Sumber Medis</h3>
+                <ul>
+                    <li>American Academy of Dermatology</li>
+                    <li>Skin Cancer Foundation</li>
+                    <li>National Cancer Institute</li>
+                    <li>Indonesian Association of Dermatologists</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-info-circle"></i> Disclaimer</h3>
+                <p>Informasi dalam website ini bersifat edukatif. Untuk diagnosis dan perawatan medis, konsultasikan dengan dokter.</p>
+                <div class="version-info">
+                    <span>Versi 1.0 | API v2.5 | Data: <span id="dataTimestamp">-</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 UV Guard Index | Analisis Matematis UV Index | f'(UV) = Proteksi</p>
+            <div class="footer-stats">
+                <span id="footerDataCount">0</span> data | 
+                <span id="footerUpdates">0</span> update hari ini | 
+                <span id="footerLocations">0</span> lokasi | 
+                <span id="footerRecommendations">0</span> rekomendasi
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification System -->
+    <div id="notificationSystem"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0"></script>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        // Simple time update for nav
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeElement = document.getElementById('currentTime');
+            if (timeElement) {
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+        
+        // Initialize time update
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+        
+        // Navigation smooth scroll
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    // Update active nav
+                    document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Smooth scroll
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Auto-update data timestamp in footer
+        function updateDataTimestamp() {
+            const now = new Date();
+            const dataElement = document.getElementById('dataTimestamp');
+            if (dataElement) {
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                dataElement.textContent = now.toLocaleDateString('id-ID', options);
+            }
+        }
+        
+        updateDataTimestamp();
+        
+        // Update footer stats on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const footerDataCount = document.getElementById('footerDataCount');
+            const footerUpdates = document.getElementById('footerUpdates');
+            const footerLocations = document.getElementById('footerLocations');
+            const footerRecommendations = document.getElementById('footerRecommendations');
+            
+            if (footerDataCount) footerDataCount.textContent = '0';
+            if (footerUpdates) footerUpdates.textContent = '0';
+            if (footerLocations) footerLocations.textContent = '1';
+            if (footerRecommendations) footerRecommendations.textContent = '0';
+        });
+    </script>
+    <!-- DEBUG SCRIPT - Tambah sebelum </body> -->
+<script>
+    // Debug helper untuk province dropdown
+    function debugProvinceDropdown() {
+        console.log("=== DEBUG PROVINCE DROPDOWN ===");
+        
+        const select = document.getElementById('provinceSelect');
+        if (!select) {
+            console.error("ERROR: #provinceSelect not found!");
+            return;
+        }
+        
+        console.log("Element found:", select);
+        console.log("Options count:", select.options.length);
+        console.log("Current value:", select.value);
+        
+        
+        // Test: tambah satu provinsi manual
+        const testOption = new Option('TEST: DKI Jakarta (Jakarta)', '-6.2088,106.8456');
+        select.appendChild(testOption);
+        
+        // Tambah click handler sederhana
+        select.addEventListener('change', function() {
+            console.log("DEBUG: Dropdown changed to:", this.value);
+            if (window.app && this.value) {
+                const [lat, lon] = this.value.split(',').map(Number);
+                window.app.currentLocation = {lat, lon, name: "Test Location"};
+                window.app.fetchData();
+            }
+        });
+        
+        console.log("=== DEBUG COMPLETE ===");
+    }
+    
+    // Jalankan debug setelah halaman load
+    setTimeout(debugProvinceDropdown, 1000);
+</script>
+</body>
+</html>
