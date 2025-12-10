@@ -1,4 +1,4 @@
-// ==================== UV GUARD Index - COMPLETE VERSION (OPTIMIZED & REALISTIC) ====================
+// ==================== UV GUARD Index - COMPLETE VERSION (OPTIMIZED & REALISTIC) ====================//
 class UVGuardIndex {
     constructor() {
         this.dataHistory = [];
@@ -11,9 +11,35 @@ class UVGuardIndex {
         this.regressionModel = null;
         this.timezone = 'Asia/Jakarta'; // Default timezone
         this.timeUpdateInterval = null;
+        this.isInitialLoad = true;
+        this.shouldAutoFetch = false;
+        this.hardResetAllTimers();
         window.addEventListener('beforeunload', () => {
         console.log('🔄 Cleaning up timers before page unload...');
         this.stopTimeUpdates();
+        // HARD FIX untuk timezone
+const originalStartTimeUpdates = this.startTimeUpdates;
+this.startTimeUpdates = function() {
+    console.log(`🕐 startTimeUpdates called, current timezone: ${this.timezone}`);
+    
+    // Force Bali ke WITA
+    if (this.currentLocation && 
+        (this.currentLocation.province?.toLowerCase().includes('bali') ||
+         this.currentLocation.name?.toLowerCase().includes('bali') ||
+         this.currentLocation.name?.toLowerCase().includes('denpasar'))) {
+        
+        console.log("🎯 HARD FIX: Forcing Bali to Asia/Makassar");
+        this.timezone = "Asia/Makassar";
+        
+        // Update location juga
+        if (this.currentLocation) {
+            this.currentLocation.timezone = "Asia/Makassar";
+        }
+    }
+    
+    // Panggil original
+    return originalStartTimeUpdates.call(this);
+};
     });
         // API Configuration dengan failover
         this.API_CONFIG = {
@@ -47,48 +73,73 @@ class UVGuardIndex {
             maxRetries: 3
         };
 
-        // Data provinsi Indonesia
-        this.INDONESIA_PROVINCES = [
+        // Data provinsi Indonesia - HARUS BENAR 100%
+this.INDONESIA_PROVINCES = [
+    // === WIB (GMT+7) ===
     { id: 37, name: "Aceh", capital: "Banda Aceh", lat: 5.5483, lon: 95.3238, timezone: "Asia/Jakarta" },
-    { id: 7, name: "Bali", capital: "Denpasar", lat: -8.6500, lon: 115.2167, timezone: "Asia/Makassar" },
-    { id: 5, name: "Banten", capital: "Serang", lat: -6.1200, lon: 140.4018, timezone: "Asia/Jakarta" },
+    { id: 5, name: "Banten", capital: "Serang", lat: -6.1200, lon: 106.1503, timezone: "Asia/Jakarta" },
     { id: 14, name: "Bengkulu", capital: "Bengkulu", lat: -3.7956, lon: 102.2592, timezone: "Asia/Jakarta" },
     { id: 6, name: "DI Yogyakarta", capital: "Yogyakarta", lat: -7.7956, lon: 110.3695, timezone: "Asia/Jakarta" },
     { id: 1, name: "DKI Jakarta", capital: "Jakarta", lat: -6.2088, lon: 106.8456, timezone: "Asia/Jakarta" },
-    { id: 25, name: "Gorontalo", capital: "Gorontalo", lat: 0.5412, lon: 123.0595, timezone: "Asia/Makassar" },
     { id: 12, name: "Jambi", capital: "Jambi", lat: -1.5900, lon: 103.6100, timezone: "Asia/Jakarta" },
     { id: 2, name: "Jawa Barat", capital: "Bandung", lat: -6.9175, lon: 107.6191, timezone: "Asia/Jakarta" },
     { id: 4, name: "Jawa Tengah", capital: "Semarang", lat: -6.9667, lon: 110.4167, timezone: "Asia/Jakarta" },
     { id: 3, name: "Jawa Timur", capital: "Surabaya", lat: -7.2575, lon: 112.7521, timezone: "Asia/Jakarta" },
-    { id: 16, name: "Kalimantan Barat", capital: "Pontianak", lat: -0.0226, lon: 109.3307, timezone: "Asia/Pontianak" },
-    { id: 18, name: "Kalimantan Selatan", capital: "Banjarmasin", lat: -3.3199, lon: 114.5908, timezone: "Asia/Makassar" },
-    { id: 17, name: "Kalimantan Tengah", capital: "Palangkaraya", lat: -2.2100, lon: 113.9200, timezone: "Asia/Pontianak" },
-    { id: 19, name: "Kalimantan Timur", capital: "Samarinda", lat: -0.5022, lon: 117.1536, timezone: "Asia/Makassar" },
-    { id: 20, name: "Kalimantan Utara", capital: "Tanjung Selor", lat: 2.8375, lon: 117.3653, timezone: "Asia/Makassar" },
-    { id: 38, name: "Kepulauan Bangka Belitung", capital: "Pangkal Pinang", lat: -2.1333, lon: 106.1333, timezone: "Asia/Jakarta" },
-    { id: 11, name: "Kepulauan Riau", capital: "Tanjung Pinang", lat: 0.9188, lon: 104.4554, timezone: "Asia/Jakarta" },
+    { id: 16, name: "Kalimantan Barat", capital: "Pontianak", lat: -0.0226, lon: 109.3307, timezone: "Asia/Jakarta" },
+    { id: 17, name: "Kalimantan Tengah", capital: "Palangkaraya", lat: -2.2100, lon: 113.9200, timezone: "Asia/Jakarta" },
     { id: 15, name: "Lampung", capital: "Bandar Lampung", lat: -5.4500, lon: 105.2667, timezone: "Asia/Jakarta" },
-    { id: 27, name: "Maluku", capital: "Ambon", lat: -3.6954, lon: 128.1814, timezone: "Asia/Jayapura" },
-    { id: 28, name: "Maluku Utara", capital: "Ternate", lat: 0.7833, lon: 127.3667, timezone: "Asia/Jayapura" },
-    { id: 36, name: "Nusa Tenggara Barat", capital: "Mataram", lat: -8.5833, lon: 116.1167, timezone: "Asia/Makassar" },
-    { id: 35, name: "Nusa Tenggara Timur", capital: "Kupang", lat: -10.1772, lon: 123.6070, timezone: "Asia/Makassar" },
-    { id: 29, name: "Papua", capital: "Jayapura", lat: -2.5333, lon: 140.7167, timezone: "Asia/Jayapura" },
-    { id: 34, name: "Papua Barat Daya", capital: "Sorong", lat: -0.8667, lon: 131.2500, timezone: "Asia/Jayapura" },
-    { id: 30, name: "Papua Barat", capital: "Manokwari", lat: -0.8667, lon: 134.0833, timezone: "Asia/Jayapura" },
-    { id: 33, name: "Papua Pegunungan", capital: "Wamena", lat: -4.0956, lon: 138.9550, timezone: "Asia/Jayapura" },
-    { id: 31, name: "Papua Selatan", capital: "Merauke", lat: -8.4932, lon: 140.4018, timezone: "Asia/Jayapura" },
-    { id: 32, name: "Papua Tengah", capital: "Nabire", lat: -3.3667, lon: 135.4833, timezone: "Asia/Jayapura" },
     { id: 10, name: "Riau", capital: "Pekanbaru", lat: 0.5333, lon: 101.4500, timezone: "Asia/Jakarta" },
-    { id: 26, name: "Sulawesi Barat", capital: "Mamuju", lat: -2.6786, lon: 118.8933, timezone: "Asia/Makassar" },
-    { id: 23, name: "Sulawesi Selatan", capital: "Makassar", lat: -5.1477, lon: 119.4327, timezone: "Asia/Makassar" },
-    { id: 22, name: "Sulawesi Tengah", capital: "Palu", lat: -0.8950, lon: 119.8597, timezone: "Asia/Makassar" },
-    { id: 24, name: "Sulawesi Tenggara", capital: "Kendari", lat: -3.9675, lon: 122.5947, timezone: "Asia/Makassar" },
-    { id: 21, name: "Sulawesi Utara", capital: "Manado", lat: 1.4931, lon: 124.8413, timezone: "Asia/Makassar" },
     { id: 9, name: "Sumatera Barat", capital: "Padang", lat: -0.9492, lon: 100.3543, timezone: "Asia/Jakarta" },
     { id: 13, name: "Sumatera Selatan", capital: "Palembang", lat: -2.9900, lon: 104.7600, timezone: "Asia/Jakarta" },
-    { id: 8, name: "Sumatera Utara", capital: "Medan", lat: 3.5952, lon: 98.6722, timezone: "Asia/Jakarta" }
+    { id: 8, name: "Sumatera Utara", capital: "Medan", lat: 3.5952, lon: 98.6722, timezone: "Asia/Jakarta" },
+    { id: 38, name: "Kepulauan Bangka Belitung", capital: "Pangkal Pinang", lat: -2.1333, lon: 106.1333, timezone: "Asia/Jakarta" },
+    { id: 11, name: "Kepulauan Riau", capital: "Tanjung Pinang", lat: 0.9188, lon: 104.4554, timezone: "Asia/Jakarta" },
+    
+    // === WITA (GMT+8) ===
+    { id: 7, name: "Bali", capital: "Denpasar", lat: -8.6500, lon: 115.2167, timezone: "Asia/Makassar" }, // WITA
+    { id: 25, name: "Gorontalo", capital: "Gorontalo", lat: 0.5412, lon: 123.0595, timezone: "Asia/Makassar" }, // WITA
+    { id: 18, name: "Kalimantan Selatan", capital: "Banjarmasin", lat: -3.3199, lon: 114.5908, timezone: "Asia/Makassar" }, // WITA
+    { id: 19, name: "Kalimantan Timur", capital: "Samarinda", lat: -0.5022, lon: 117.1536, timezone: "Asia/Makassar" }, // WITA
+    { id: 20, name: "Kalimantan Utara", capital: "Tanjung Selor", lat: 2.8375, lon: 117.3653, timezone: "Asia/Makassar" }, // WITA
+    { id: 36, name: "Nusa Tenggara Barat", capital: "Mataram", lat: -8.5833, lon: 116.1167, timezone: "Asia/Makassar" }, // WITA
+    { id: 35, name: "Nusa Tenggara Timur", capital: "Kupang", lat: -10.1772, lon: 123.6070, timezone: "Asia/Makassar" }, // WITA
+    { id: 26, name: "Sulawesi Barat", capital: "Mamuju", lat: -2.6786, lon: 118.8933, timezone: "Asia/Makassar" }, // WITA
+    { id: 23, name: "Sulawesi Selatan", capital: "Makassar", lat: -5.1477, lon: 119.4327, timezone: "Asia/Makassar" }, // WITA
+    { id: 22, name: "Sulawesi Tengah", capital: "Palu", lat: -0.8950, lon: 119.8597, timezone: "Asia/Makassar" }, // WITA
+    { id: 24, name: "Sulawesi Tenggara", capital: "Kendari", lat: -3.9675, lon: 122.5947, timezone: "Asia/Makassar" }, // WITA
+    { id: 21, name: "Sulawesi Utara", capital: "Manado", lat: 1.4931, lon: 124.8413, timezone: "Asia/Makassar" }, // WITA
+    
+    // === WIT (GMT+9) ===
+    { id: 27, name: "Maluku", capital: "Ambon", lat: -3.6954, lon: 128.1814, timezone: "Asia/Jayapura" }, // WIT
+    { id: 28, name: "Maluku Utara", capital: "Ternate", lat: 0.7833, lon: 127.3667, timezone: "Asia/Jayapura" }, // WIT
+    { id: 29, name: "Papua", capital: "Jayapura", lat: -2.5333, lon: 140.7167, timezone: "Asia/Jayapura" }, // WIT
+    { id: 34, name: "Papua Barat Daya", capital: "Sorong", lat: -0.8667, lon: 131.2500, timezone: "Asia/Jayapura" }, // WIT
+    { id: 30, name: "Papua Barat", capital: "Manokwari", lat: -0.8667, lon: 134.0833, timezone: "Asia/Jayapura" }, // WIT
+    { id: 33, name: "Papua Pegunungan", capital: "Wamena", lat: -4.0956, lon: 138.9550, timezone: "Asia/Jayapura" }, // WIT
+    { id: 31, name: "Papua Selatan", capital: "Merauke", lat: -8.4932, lon: 140.4018, timezone: "Asia/Jayapura" }, // WIT
+    { id: 32, name: "Papua Tengah", capital: "Nabire", lat: -3.3667, lon: 135.4833, timezone: "Asia/Jayapura" } // WIT
 ];
-        
+
+        // VERIFIKASI DATA PROVINSI
+console.log("=".repeat(60));
+console.log("🇮🇩 VERIFIKASI DATA PROVINSI INDONESIA");
+console.log("=".repeat(60));
+
+this.INDONESIA_PROVINCES.forEach(prov => {
+    let zona = '';
+    if (prov.timezone === 'Asia/Jakarta') zona = 'WIB';
+    else if (prov.timezone === 'Asia/Makassar') zona = 'WITA';
+    else if (prov.timezone === 'Asia/Jayapura') zona = 'WIT';
+    
+    console.log(`${prov.name.padEnd(25)} | ${zona.padEnd(4)} | ${prov.timezone}`);
+});
+
+console.log("=".repeat(60));
+console.log(`Total: ${this.INDONESIA_PROVINCES.length} provinsi`);
+console.log(`WIB: ${this.INDONESIA_PROVINCES.filter(p => p.timezone === 'Asia/Jakarta').length}`);
+console.log(`WITA: ${this.INDONESIA_PROVINCES.filter(p => p.timezone === 'Asia/Makassar').length}`);
+console.log(`WIT: ${this.INDONESIA_PROVINCES.filter(p => p.timezone === 'Asia/Jayapura').length}`);
+console.log("=".repeat(60));
         // Cache untuk hasil geocoding
         this.geoCache = new Map();
         
@@ -352,7 +403,52 @@ class UVGuardIndex {
         // Tambah CSS untuk user guide
         this.addUserGuideStyles();
     }
+    // Tambahkan button untuk enable fetch
+addManualControlButton() {
+    const controlBtn = document.createElement('button');
+    controlBtn.id = 'manualControlBtn';
+    controlBtn.innerHTML = '<i class="fas fa-play"></i> Enable Fetch';
+    controlBtn.style.position = 'fixed';
+    controlBtn.style.top = '20px';
+    controlBtn.style.right = '20px';
+    controlBtn.style.zIndex = '9999';
+    controlBtn.style.background = '#ff3300';
+    controlBtn.style.color = 'white';
+    controlBtn.style.border = 'none';
+    controlBtn.style.borderRadius = '5px';
+    controlBtn.style.padding = '10px 15px';
+    controlBtn.style.cursor = 'pointer';
     
+    controlBtn.onclick = () => {
+        this.blockAutoFetch = false;
+        this.manualMode = false;
+        this.showNotification("Manual mode disabled - Auto-fetch enabled", "warning");
+        controlBtn.remove();
+    };
+    
+    document.body.appendChild(controlBtn);
+}
+    // ==================== HARD RESET TIMER ====================
+hardResetAllTimers() {
+    console.log("🔄 HARD RESET ALL TIMERS");
+    
+    // 1. Clear semua interval
+    if (this.timeUpdateInterval) {
+        clearInterval(this.timeUpdateInterval);
+        this.timeUpdateInterval = null;
+    }
+    
+    // 2. Clear semua timeout
+    const highestId = window.setTimeout(() => {}, 0);
+    for (let i = 0; i < highestId; i++) {
+        window.clearTimeout(i);
+    }
+    
+    // 3. Reset timezone
+    this.timezone = "Asia/Jakarta";
+    
+    console.log("✅ All timers reset");
+}
     addUserGuideStyles() {
         const styleId = 'user-guide-styles';
         if (document.getElementById(styleId)) return;
@@ -739,63 +835,329 @@ class UVGuardIndex {
     }
     
     async init() {
-        console.log("🚀 UV Guard Pro Initializing...");
+    console.log("🚀 UV Guard Pro Initializing...");
+    
+    try {
+        // 1. Load saved data
+        this.loadHistory();
         
+        // 2. Initialize components
+        await this.initializeComponents();
+        
+        // 3. FORCE REFRESH DROPDOWN
+        console.log("🔄 Forcing province dropdown refresh...");
+        this.initProvinceSelect();
+        
+        // 4. JANGAN set default location - BIARKAN KOSONG
+        // this.setDefaultLocation(); // JANGAN PAKAI INI
+        
+        // 5. Start time updates dengan UTC (bukan Asia/Jakarta)
+        this.timezone = 'UTC'; // Default ke UTC, bukan Asia/Jakarta
+        this.startTimeUpdates();
+        
+        // 6. Show EMPTY placeholder
+        this.showStartupPlaceholder();
+        
+        // 7. CLEAR SEMUA INPUT FIELD
+        this.clearAllInputsOnStartup();
+        
+        // 8. CLEAR localStorage timezone cache
         try {
-            // 1. Load saved data
-            this.loadHistory();
-            
-            // 2. Initialize components
-            await this.initializeComponents();
-            
-            // 3. Set default location
-            this.setDefaultLocation();
-            
-            // 4. Start time updates
-            this.startTimeUpdates();
-            
-            // 5. Test API connection
-            const apiConnected = await this.testAPIConnection();
-            
-            // 6. Initial data fetch
-            if (this.dataHistory.length > 0 && this.currentLocation) {
-                console.log("🔄 Using existing data from history");
-                const latestData = this.dataHistory[this.dataHistory.length - 1];
-                this.currentData = {
-                    uvIndex: latestData.uvIndex,
-                    temperature: latestData.temperature,
-                    humidity: latestData.humidity,
-                    weather: latestData.weather,
-                    cityName: latestData.location,
-                    timestamp: new Date(),
-                    lat: latestData.lat,
-                    lon: latestData.lon,
-                    source: "history",
-                    apiSource: "history"
-                };
-                this.updateAllUI();
-            }
-            
-            // Fetch fresh data
-            if (apiConnected && this.currentLocation) {
-                console.log("🌐 API connected, fetching fresh data...");
-                setTimeout(() => {
-                    this.fetchData();
-                }, 1000);
-            } else if (this.currentLocation) {
-                setTimeout(() => {
-                    this.fetchData();
-                }, 1000);
-            }
-            
-            console.log("✅ UV Guard Pro initialized successfully!");
-            
-        } catch (error) {
-            console.error("❌ Initialization error:", error);
-            this.showNotification("Error inisialisasi aplikasi", "error");
+            localStorage.removeItem('uvguard_pro_timezone');
+            console.log('✅ localStorage timezone cleared');
+        } catch (e) {
+            console.warn('⚠️ Could not clear localStorage');
         }
+        
+        console.log("✅ UV Guard Pro ready! - SEMUA FIELD KOSONG");
+        
+    } catch (error) {
+        console.error("❌ Initialization error:", error);
+    }
+}
+
+    clearAllInputs() {
+    console.log("🧹 Clearing all input fields...");
+    
+    // Clear text inputs
+    const inputs = [
+        'cityInput',
+        'latInput',
+        'lonInput',
+        'calcUV'
+    ];
+    
+    inputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = '';
+            console.log(`✅ Cleared ${id}`);
+        }
+    });
+    
+    // Clear dropdowns
+    const provinceSelect = document.getElementById('provinceSelect');
+    if (provinceSelect) {
+        provinceSelect.selectedIndex = 0;
+        console.log('✅ Cleared province select');
     }
     
+    const skinTypeSelect = document.getElementById('skinTypeSelect');
+    if (skinTypeSelect) {
+        skinTypeSelect.value = 'III';
+    }
+    
+    const spfSelect = document.getElementById('spfSelect');
+    if (spfSelect) {
+        spfSelect.value = '30';
+    }
+    
+    // Clear location cache
+    this.currentLocation = null;
+    
+    console.log("✅ All inputs cleared");
+}
+
+showStartupPlaceholder() {
+    console.log("📱 Showing startup placeholder");
+    
+    // Update UI tanpa data
+    const uvElement = document.getElementById('currentUV');
+    if (uvElement) uvElement.textContent = "--";
+    
+    const levelElement = document.getElementById('uvLevel');
+    if (levelElement) {
+        levelElement.textContent = "SILAKAN AMBIL DATA";
+        levelElement.style.backgroundColor = "#4CAF50";
+    }
+    
+    // **TIMEZONE KOSONG**
+    const timezoneElement = document.getElementById('timezoneInfo');
+    if (timezoneElement) {
+        timezoneElement.textContent = "--";
+        timezoneElement.style.color = "#666";
+    }
+    
+    // **KOORDINAT KOSONG**
+    const coordinatesElement = document.getElementById('coordinatesText');
+    if (coordinatesElement) {
+        coordinatesElement.textContent = "--";
+        coordinatesElement.style.color = "#666";
+    }
+    
+    // Enable tombol fetch
+    const fetchBtn = document.getElementById('fetchData');
+    if (fetchBtn) {
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang';
+        fetchBtn.style.opacity = '1';
+    }
+    
+    // Tampilkan instruction
+    this.showNotification("Aplikasi siap. Pilih lokasi dan klik 'Ambil Data'", "info");
+}   
+
+        // ==================== CLEAR ON STARTUP ====================
+clearAllInputsOnStartup() {
+    console.log("🧹 Clearing all inputs on startup...");
+    
+    // Clear text inputs
+    const inputs = ['cityInput', 'latInput', 'lonInput'];
+    inputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = '';
+            console.log(`✅ Cleared ${id}`);
+        }
+    });
+    
+    // Clear dropdown
+    const provinceSelect = document.getElementById('provinceSelect');
+    if (provinceSelect) {
+        provinceSelect.selectedIndex = 0;
+        console.log('✅ Cleared province select');
+    }
+    
+    // Clear current location
+    this.currentLocation = null;
+    
+    // Reset timezone ke UTC
+    this.timezone = 'UTC';
+    
+    console.log("✅ All inputs cleared on startup");
+}
+
+    showPlaceholderData() {
+    console.log("📱 Showing placeholder data - EMPTY STATE");
+    
+    // UV Display
+    const uvElement = document.getElementById('currentUV');
+    if (uvElement) {
+        uvElement.textContent = "--";
+        uvElement.style.color = "#666";
+    }
+    
+    const levelElement = document.getElementById('uvLevel');
+    if (levelElement) {
+        levelElement.textContent = "PILIH LOKASI";
+        levelElement.style.backgroundColor = "#666";
+        levelElement.style.color = "white";
+    }
+    
+    const descElement = document.getElementById('uvDescription');
+    if (descElement) {
+        descElement.textContent = "Silakan pilih lokasi dan klik 'Ambil Data'";
+        descElement.style.color = "#666";
+    }
+    
+    // Location
+    const locationElement = document.getElementById('locationName');
+    if (locationElement) {
+        locationElement.textContent = "--";
+        locationElement.style.color = "#666";
+    }
+    
+    // Coordinates
+    const coordinatesElement = document.getElementById('coordinatesText');
+    if (coordinatesElement) {
+        coordinatesElement.textContent = "--";
+        coordinatesElement.style.color = "#666";
+    }
+    
+    // TIMEZONE - PASTIKAN KOSONG
+    const timezoneElement = document.getElementById('timezoneInfo');
+    if (timezoneElement) {
+        timezoneElement.textContent = "--";
+        timezoneElement.style.color = "#666";
+    }
+    
+    // Time Status & Period
+    const timeStatusElement = document.getElementById('timeStatus');
+    const dayNightElement = document.getElementById('dayNightIndicator');
+    if (timeStatusElement) {
+        timeStatusElement.textContent = "--";
+        timeStatusElement.style.color = "#666";
+    }
+    if (dayNightElement) {
+        dayNightElement.textContent = "--";
+        dayNightElement.style.color = "#666";
+    }
+    
+    // Current time (browser local time saja)
+    const currentTimeElement = document.getElementById('currentTime');
+    if (currentTimeElement) {
+        currentTimeElement.textContent = new Date().toLocaleTimeString('id-ID');
+        currentTimeElement.style.color = "#666";
+    }
+    
+    // Date
+    const dateElement = document.getElementById('dataTimestamp');
+    if (dateElement) {
+        dateElement.textContent = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        dateElement.style.color = "#666";
+    }
+    
+    // Weather data
+    const tempElement = document.getElementById('temperature');
+    const feelsLikeElement = document.getElementById('feelsLikeText');
+    const weatherElement = document.getElementById('weatherCondition');
+    const humidityElement = document.getElementById('humidity');
+    
+    if (tempElement) tempElement.textContent = "--°C";
+    if (feelsLikeElement) feelsLikeElement.textContent = "--°C";
+    if (weatherElement) weatherElement.textContent = "--";
+    if (humidityElement) humidityElement.textContent = "--%";
+    
+    // Data Source
+    const dataSourceElement = document.getElementById('dataSource');
+    if (dataSourceElement) {
+        dataSourceElement.textContent = "--";
+        dataSourceElement.style.color = "#666";
+    }
+    
+    // Last Update
+    const lastUpdateElement = document.getElementById('lastUpdate');
+    if (lastUpdateElement) {
+        lastUpdateElement.textContent = "--";
+        lastUpdateElement.style.color = "#666";
+    }
+    
+    // Enable fetch button
+    const fetchBtn = document.getElementById('fetchData');
+    if (fetchBtn) {
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang';
+        fetchBtn.style.opacity = '1';
+    }
+    
+    console.log("✅ Placeholder shown - ALL EMPTY");
+}
+    
+    // Tambahkan method ini di class UVGuardIndex
+updateUIWithPlaceholder() {
+    console.log("🔄 Updating UI with placeholder data...");
+    
+    // Update time display saja
+    this.updateTimeDisplay();
+    
+    // Set placeholder untuk UV
+    const uvValueElement = document.getElementById('currentUV');
+    if (uvValueElement) {
+        uvValueElement.textContent = "--";
+        uvValueElement.style.color = '#666';
+    }
+    
+    const levelElement = document.getElementById('uvLevel');
+    if (levelElement) {
+        levelElement.textContent = "PILIH LOKASI";
+        levelElement.style.backgroundColor = "#666";
+    }
+    
+    const descElement = document.getElementById('uvDescription');
+    if (descElement) {
+        descElement.textContent = "Pilih lokasi terlebih dahulu untuk melihat data UV";
+    }
+    
+    // Update location info
+    const locationElement = document.getElementById('locationName');
+    if (locationElement) {
+        locationElement.textContent = "Silakan pilih lokasi";
+    }
+    
+    // Update recommendations
+    const container = document.getElementById('recommendationsContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="recommendation-card" data-level="info">
+                <div class="recommendation-header">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="recommendation-title">📍 Pilih Lokasi</div>
+                </div>
+                <ul class="recommendation-list">
+                    <li><i class="fas fa-info-circle"></i> Pilih provinsi dari dropdown</li>
+                    <li><i class="fas fa-info-circle"></i> Atau ketik nama kota</li>
+                    <li><i class="fas fa-info-circle"></i> Atau gunakan deteksi lokasi otomatis</li>
+                    <li><i class="fas fa-info-circle"></i> Klik "Ambil Data" untuk memulai</li>
+                </ul>
+            </div>
+        `;
+    }
+    
+    // Update data source info
+    const sourceElement = document.getElementById('dataSource');
+    if (sourceElement) {
+        sourceElement.textContent = "Menunggu input";
+        sourceElement.style.color = '#666';
+    }
+}
+
     async initializeComponents() {
         // Initialize province dropdown
         this.initProvinceSelect();
@@ -812,7 +1174,7 @@ class UVGuardIndex {
         this.initEventListeners();
         
         // Initialize UI state
-        this.updateUIState();
+        this.updateUIState();    
     }
     
     // ==================== PROVINCE DROPDOWN ====================
@@ -834,99 +1196,360 @@ class UVGuardIndex {
     // Clear existing options
     dropdown.innerHTML = '<option value="">-- Pilih Provinsi Indonesia --</option>';
     
+    // DEBUG: Tampilkan data Bali sebelum membuat dropdown
+    const baliData = this.INDONESIA_PROVINCES.find(p => p.name === "Bali");
+    console.log("🔍 Bali data in INDONESIA_PROVINCES:", baliData);
+    
     // Add provinces
     this.INDONESIA_PROVINCES.forEach(prov => {
-        const option = document.createElement('option');
-        option.value = `${prov.lat},${prov.lon}`;
-        option.setAttribute('data-timezone', prov.timezone);
-        option.textContent = `${prov.name} (${prov.capital})`;
-        dropdown.appendChild(option);
-    });
+    const option = document.createElement('option');
+    option.value = `${prov.lat},${prov.lon}`;
+    
+    // PASTIKAN timezone sesuai zona Indonesia
+    let timezone = prov.timezone;
+    if (prov.name.includes("Bali")) {
+        timezone = "Asia/Makassar"; // WITA
+    } else if (prov.name.includes("Papua") || prov.name.includes("Maluku")) {
+        timezone = "Asia/Jayapura"; // WIT
+    } else if (prov.name.includes("Sulawesi") || 
+               prov.name.includes("Kalimantan Timur") ||
+               prov.name.includes("Kalimantan Selatan") ||
+               prov.name.includes("Nusa Tenggara")) {
+        timezone = "Asia/Makassar"; // WITA
+    } else {
+        timezone = "Asia/Jakarta"; // WIB
+    }
+    
+    option.setAttribute('data-timezone', timezone);
+    option.textContent = `${prov.name} (${prov.capital})`;
+    dropdown.appendChild(option);
+});
+
     
     console.log(`✅ Loaded ${this.INDONESIA_PROVINCES.length} provinces`);
     
+    // DEBUG: Cek option Bali setelah dibuat
+    const baliOption = Array.from(dropdown.options).find(opt => opt.textContent.includes('Bali'));
+    if (baliOption) {
+        console.log("🔍 Bali option in dropdown:", {
+            text: baliOption.textContent,
+            value: baliOption.value,
+            timezoneAttr: baliOption.getAttribute('data-timezone')
+        });
+    }
+    
     // Add event listener
-    dropdown.addEventListener('change', (e) => {
-        if (!e.target.value) return;
+    // Add event listener
+dropdown.addEventListener('change', (e) => {
+    if (!e.target.value) {
+        // Jika user memilih "Pilih Provinsi", clear semua
+        console.log("🗑️ Province cleared, resetting everything...");
         
-        // ====== TAMBAH INI ======
-        console.log("🛑 Stopping timer before province change...");
+        this.currentLocation = null;
+        this.timezone = 'Asia/Jakarta'; // Reset ke default
+        
+        // Clear input fields
+        this.clearAllInputs();
+        
+        // Show placeholder
+        this.showPlaceholderData();
+        
+        // Restart timer dengan browser time
         this.stopTimeUpdates();
-        
-        const [lat, lon] = e.target.value.split(',').map(Number);
-        const selectedText = e.target.options[e.target.selectedIndex].text;
-        const timezone = e.target.options[e.target.selectedIndex].getAttribute('data-timezone') || 'Asia/Jakarta';
-        
-        // Parse province and city names
-        const provinceMatch = selectedText.match(/^(.+?)\(/);
-        const cityMatch = selectedText.match(/\(([^)]+)\)/);
-        
-        const provinceName = provinceMatch ? provinceMatch[1].trim() : selectedText;
-        const cityName = cityMatch ? cityMatch[1].trim() : provinceName;
-        
-        console.log(`📍 Selected: ${provinceName} - ${cityName} (${lat}, ${lon}), Timezone: ${timezone}`);
-        
-        // Update current location
-        this.currentLocation = {
-            lat: lat,
-            lon: lon,
-            name: cityName,
-            province: provinceName,
-            country: "ID",
-            timezone: timezone
-        };
-        
-        // ====== TAMBAH INI ======
-        this.timezone = timezone;
-        console.log(`🔄 Timezone set to: ${this.timezone}`);
-        
-        // Update input fields
-        const cityInput = document.getElementById('cityInput');
-        const latInput = document.getElementById('latInput');
-        const lonInput = document.getElementById('lonInput');
-        
-        if (cityInput) cityInput.value = `${cityName}, ${provinceName}`;
-        if (latInput) latInput.value = lat;
-        if (lonInput) lonInput.value = lon;
-        
-        // Show notification
-        this.showNotification(`Provinsi ${provinceName} dipilih`, "success");
-        
-        // Update location status
-        this.updateLocationStatus(`Lokasi: ${provinceName}, Indonesia`);
-        
-        // ====== TAMBAH INI ======
-        console.log("🟢 Restarting timer with province timezone...");
         setTimeout(() => {
             this.startTimeUpdates();
         }, 100);
         
-        // Fetch data after a short delay
-        setTimeout(() => {
-            this.fetchData();
-        }, 800);
+        this.showNotification("Lokasi di-reset. Pilih provinsi baru.", "info");
+        return;
+    }
+    
+    console.log("🛑 Stopping timer before province change...");
+    this.stopTimeUpdates();
+    
+    const [lat, lon] = e.target.value.split(',').map(Number);
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    const selectedText = selectedOption.text;
+    
+    // ========== PERBAIKAN DI SINI ==========
+    // Ambil timezone dari attribute
+    let timezone = selectedOption.getAttribute('data-timezone');
+    
+    // DEBUG
+    console.log("Selected option attributes:", {
+        text: selectedText,
+        timezoneAttr: timezone,
+        hasTimezoneAttr: selectedOption.hasAttribute('data-timezone')
     });
+    
+    // Jika timezone tidak ada atau undefined, gunakan default
+    if (!timezone || timezone === 'null' || timezone === 'undefined') {
+        console.warn("⚠️ Timezone attribute missing or invalid, using fallback");
+        
+        // Deteksi berdasarkan nama provinsi
+        if (selectedText.includes('Bali') || selectedText.includes('Denpasar')) {
+            timezone = "Asia/Makassar";
+            console.log("🎯 Detected Bali, forcing to Asia/Makassar");
+        } else if (selectedText.includes('Papua') || selectedText.includes('Jayapura')) {
+            timezone = "Asia/Jayapura";
+        } else if (selectedText.includes('Makassar') || selectedText.includes('Sulawesi')) {
+            timezone = "Asia/Makassar";
+        } else {
+            timezone = "Asia/Jakarta";
+        }
+    }
+    
+    // Parse province and city names
+    const provinceMatch = selectedText.match(/^(.+?)\(/);
+    const cityMatch = selectedText.match(/\(([^)]+)\)/);
+    
+    const provinceName = provinceMatch ? provinceMatch[1].trim() : selectedText;
+    const cityName = cityMatch ? cityMatch[1].trim() : provinceName;
+    
+    console.log(`📍 Selected: ${provinceName}`);
+    console.log(`📍 Timezone from data: ${timezone}`);
+    console.log(`📍 Coordinates: ${lat}, ${lon}`);
+    
+    // Update current location
+    this.currentLocation = {
+        lat: lat,
+        lon: lon,
+        name: cityName,
+        province: provinceName,
+        country: "ID",
+        timezone: timezone
+    };
+    
+    // ====== SET TIMEZONE ======
+    this.timezone = timezone;
+    console.log(`🔄 App timezone set to: ${this.timezone}`);
+    // ====== UPDATE TIMEZONE DISPLAY ======
+const tzInfoElement = document.getElementById('timezoneInfo');
+if (tzInfoElement) {
+    const displayText = this.formatTimezoneForDisplay(timezone);
+    const color = this.getTimezoneColor(timezone);
+    
+    tzInfoElement.textContent = displayText;
+    tzInfoElement.style.color = color;
+    console.log(`✅ Timezone display updated: ${displayText}`);
+}
+    // Update input fields
+    const cityInput = document.getElementById('cityInput');
+    const latInput = document.getElementById('latInput');
+    const lonInput = document.getElementById('lonInput');
+    
+    if (cityInput) cityInput.value = `${cityName}, ${provinceName}`;
+    if (latInput) latInput.value = lat;
+    if (lonInput) lonInput.value = lon;
+    
+    // Show notification with timezone info
+    let tzDisplay = 'WIB';
+    if (timezone === 'Asia/Makassar') tzDisplay = 'WITA';
+    if (timezone === 'Asia/Jayapura') tzDisplay = 'WIT';
+    
+    this.showNotification(`${provinceName} dipilih (${tzDisplay})`, "success");
+    this.updateLocationStatus(`${provinceName} - ${tzDisplay}`);
+    
+    // ====== RESTART TIMER ======
+    console.log("🟢 Restarting timer with province timezone...");
+    
+    // Beri waktu untuk update state
+    setTimeout(() => {
+        // VERIFIKASI sebelum start timer
+        console.log(`🔍 Verification before starting timer:`);
+        console.log(`   - this.timezone: ${this.timezone}`);
+        console.log(`   - this.currentLocation.timezone: ${this.currentLocation.timezone}`);
+        console.log(`   - Province: ${this.currentLocation.province}`);
+        
+        this.startTimeUpdates();
+        
+        // Verifikasi setelah 1 detik
+        setTimeout(() => {
+            const timeElement = document.getElementById('currentTime');
+            if (timeElement) {
+                console.log(`✅ Time displayed: ${timeElement.textContent}`);
+            }
+        }, 1000);
+        
+    }, 100);
+    
+    // Tampilkan instruksi untuk fetch data
+    this.showNotification(`Klik "Ambil Data" untuk update UV Index`, "info");
+});
 
     
     // Trigger change event jika ada lokasi yang disimpan
-    setTimeout(() => {
-        if (this.currentLocation && this.currentLocation.lat && this.currentLocation.lon) {
-            const lat = this.currentLocation.lat;
-            const lon = this.currentLocation.lon;
+   // setTimeout(() => {
+        //if (this.currentLocation && this.currentLocation.lat && this.currentLocation.lon) {
+           // const lat = this.currentLocation.lat;
+           // const lon = this.currentLocation.lon;
             
             // Cari option yang cocok
-            for (let i = 0; i < dropdown.options.length; i++) {
-                const option = dropdown.options[i];
-                if (option.value === `${lat},${lon}` || 
-                    option.text.includes(this.currentLocation.name) ||
-                    option.text.includes(this.currentLocation.province)) {
-                    dropdown.selectedIndex = i;
-                    dropdown.dispatchEvent(new Event('change'));
-                    break;
-                }
-            }
+           // for (let i = 0; i < dropdown.options.length; i++) {
+              //  const option = dropdown.options[i];
+               // if (option.value === `${lat},${lon}` || 
+                   // option.text.includes(this.currentLocation.name) ||
+                   // option.text.includes(this.currentLocation.province)) {
+                   // dropdown.selectedIndex = i;
+                   // dropdown.dispatchEvent(new Event('change'));
+                   // break;
+              //  } 
+         // }
+         console.log("✅ Province dropdown ready - waiting for user selection");
         }
-    }, 1500);
+   // }, 1500);
+//}
+            
+
+    updateTimezoneDisplay(timezone) {
+    const tzElement = document.getElementById('timezoneInfo');
+    if (!tzElement) return;
+    
+    // Mapping timezone ke display name yang user-friendly
+    const timezoneDisplayMap = {
+        // Indonesia
+        'Asia/Jakarta': 'WIB (GMT+7)',
+        'Asia/Makassar': 'WITA (GMT+8)', 
+        'Asia/Jayapura': 'WIT (GMT+9)',
+        
+        // Asia
+        'Asia/Singapore': 'SGT (GMT+8)',
+        'Asia/Tokyo': 'JST (GMT+9)',
+        'Asia/Shanghai': 'CST (GMT+8)',
+        'Asia/Hong_Kong': 'HKT (GMT+8)',
+        'Asia/Bangkok': 'ICT (GMT+7)',
+        'Asia/Seoul': 'KST (GMT+9)',
+        'Asia/Kolkata': 'IST (GMT+5:30)',
+        'Asia/Dubai': 'GST (GMT+4)',
+        'Asia/Riyadh': 'AST (GMT+3)',
+        
+        // Australia
+        'Australia/Sydney': 'AEST (GMT+10)',
+        'Australia/Melbourne': 'AEST (GMT+10)',
+        'Australia/Perth': 'AWST (GMT+8)',
+        
+        // Europe
+        'Europe/London': 'GMT/BST (GMT+0/+1)',
+        'Europe/Paris': 'CET (GMT+1)',
+        'Europe/Berlin': 'CET (GMT+1)',
+        'Europe/Moscow': 'MSK (GMT+3)',
+        
+        // Americas
+        'America/New_York': 'EST (GMT-5)',
+        'America/Chicago': 'CST (GMT-6)',
+        'America/Denver': 'MST (GMT-7)',
+        'America/Los_Angeles': 'PST (GMT-8)',
+        'America/Toronto': 'EST (GMT-5)',
+        
+        // Other
+        'UTC': 'UTC (GMT+0)'
+    };
+    
+    // Warna berdasarkan region
+    const timezoneColorMap = {
+        // Indonesia
+        'Asia/Jakarta': '#4CAF50',
+        'Asia/Makassar': '#0066cc',
+        'Asia/Jayapura': '#ff6600',
+        
+        // Asia
+        'Asia/Singapore': '#9b59b6',
+        'Asia/Tokyo': '#e74c3c',
+        'Asia/Shanghai': '#c0392b',
+        'Asia/Hong_Kong': '#3498db',
+        'Asia/Bangkok': '#e67e22',
+        'Asia/Seoul': '#2c3e50',
+        
+        // Australia
+        'Australia/Sydney': '#1abc9c',
+        
+        // Europe
+        'Europe/London': '#3498db',
+        'Europe/Paris': '#2980b9',
+        
+        // Americas
+        'America/New_York': '#2ecc71',
+        
+        // Default
+        'default': '#666'
+    };
+    
+    const displayText = timezoneDisplayMap[timezone] || timezone;
+    const color = timezoneColorMap[timezone] || timezoneColorMap.default;
+    
+    tzElement.textContent = displayText;
+    tzElement.style.color = color;
+}
+
+    // ==================== TIMEZONE FORMAT HELPER ====================
+formatTimezoneForDisplay(timezone) {
+    const tz = timezone || this.timezone || 'Asia/Jakarta';
+    
+    // Mapping untuk display yang user-friendly
+    const displayMap = {
+        // Indonesia
+        'Asia/Jakarta': 'WIB (GMT+7)',
+        'Asia/Makassar': 'WITA (GMT+8)', 
+        'Asia/Jayapura': 'WIT (GMT+9)',
+        
+        // Asia
+        'Asia/Singapore': 'SGT (GMT+8)',
+        'Asia/Tokyo': 'JST (GMT+9)',
+        'Asia/Shanghai': 'CST (GMT+8)',
+        'Asia/Hong_Kong': 'HKT (GMT+8)',
+        'Asia/Bangkok': 'ICT (GMT+7)',
+        'Asia/Seoul': 'KST (GMT+9)',
+        'Asia/Dubai': 'GST (GMT+4)',
+        
+        // Australia
+        'Australia/Sydney': 'AEST (GMT+10)',
+        'Australia/Melbourne': 'AEST (GMT+10)',
+        'Australia/Perth': 'AWST (GMT+8)',
+        
+        // Europe
+        'Europe/London': 'GMT/BST (GMT+0/+1)',
+        'Europe/Paris': 'CET (GMT+1)',
+        'Europe/Berlin': 'CET (GMT+1)',
+        
+        // Americas
+        'America/New_York': 'EST (GMT-5)',
+        'America/Los_Angeles': 'PST (GMT-8)',
+        
+        // Default
+        'UTC': 'UTC (GMT+0)'
+    };
+    
+    return displayMap[tz] || tz;
+}
+
+getTimezoneColor(timezone) {
+    const tz = timezone || this.timezone || 'Asia/Jakarta';
+    
+    const colorMap = {
+        // Indonesia
+        'Asia/Jakarta': '#4CAF50',  // Hijau untuk WIB
+        'Asia/Makassar': '#0066cc', // Biru untuk WITA
+        'Asia/Jayapura': '#ff6600', // Orange untuk WIT
+        
+        // Asia
+        'Asia/Singapore': '#9b59b6', // Ungu
+        'Asia/Tokyo': '#e74c3c',     // Merah
+        'Asia/Seoul': '#2c3e50',     // Dark grey
+        
+        // Australia
+        'Australia/Sydney': '#1abc9c', // Turquoise
+        
+        // Europe
+        'Europe/London': '#3498db',   // Biru muda
+        
+        // Americas  
+        'America/New_York': '#2ecc71', // Hijau muda
+        
+        // Default
+        'default': '#666'
+    };
+    
+    return colorMap[tz] || colorMap.default;
 }
     
     initSkinTypeSelector() {
@@ -983,67 +1606,128 @@ class UVGuardIndex {
         }
     }
     
+    // Helper untuk display timezone
+getTimezoneDisplay(timezone) {
+    if (!timezone) return "--";
+    if (timezone === 'Asia/Makassar') return 'WITA (GMT+8)';
+    if (timezone === 'Asia/Jayapura') return 'WIT (GMT+9)';
+    if (timezone === 'Asia/Jakarta') return 'WIB (GMT+7)';
+    if (timezone === 'Asia/Singapore') return 'SGT (GMT+8)';
+    if (timezone === 'Asia/Tokyo') return 'JST (GMT+9)';
+    if (timezone === 'Europe/London') return 'GMT/BST';
+    if (timezone === 'America/New_York') return 'EST (GMT-5)';
+    return timezone;
+}
+
+
+
+// Helper untuk parse nama kota dari option text
+getCityNameFromOption(optionText) {
+    const match = optionText.match(/\(([^)]+)\)/);
+    return match ? match[1].trim() : optionText.split('(')[0].trim();
+}
+
+// Helper untuk parse nama provinsi dari option text
+getProvinceNameFromOption(optionText) {
+    const match = optionText.match(/^(.+?)\(/);
+    return match ? match[1].trim() : optionText.split('-')[0].trim();
+}
+
     // ==================== TIMEZONE DETECTION ====================
 getTimezoneFromCoordinates(lat, lon) {
-    // Simple detection untuk demo
-    console.log(`📍 Timezone untuk: ${lat}, ${lon}`);
+    console.log(`🌍 Timezone detection for: ${lat}, ${lon}`);
     
-    // SINGAPURA
-    if (lon > 103 && lon < 104 && lat > 1 && lat < 2) {
+    // INDONESIA - PAKAI DATA DARI PROVINSI, JANGAN LOGIKA KOORDINAT!
+    if (lat > -11 && lat < 6 && lon > 95 && lon < 141) {
+        console.log("📍 Indonesia location detected");
+        
+        // CARI PROVINSI BERDASARKAN KOORDINAT
+        for (const prov of this.INDONESIA_PROVINCES) {
+            // Tolerance ±0.5 derajat untuk matching
+            const latDiff = Math.abs(prov.lat - lat);
+            const lonDiff = Math.abs(prov.lon - lon);
+            
+            if (latDiff < 0.5 && lonDiff < 0.5) {
+                console.log(`📍 Matched province: ${prov.name} -> ${prov.timezone}`);
+                return prov.timezone;
+            }
+        }
+        
+        // Jika tidak match, gunakan logika default
+        if (lon > 129) return "Asia/Jayapura";      // WIT
+        if (lon > 118.5 && lat < 10) return "Asia/Makassar"; // WITA
+        return "Asia/Jakarta";                      // WIB
+    }
+
+    
+    // INTERNATIONAL CITIES dengan display name yang user-friendly
+    // Singapore
+    if (lat > 1.2 && lat < 1.5 && lon > 103.6 && lon < 104.0) {
         return "Asia/Singapore";
     }
-    
-    // LONDON
-    if (lon > -1 && lon < 0 && lat > 51 && lat < 52) {
-        return "Europe/London";
-    }
-    
-    // TOKYO
-    if (lon > 139 && lon < 140 && lat > 35 && lat < 36) {
+    // Tokyo, Japan
+    if (lat > 35.6 && lat < 35.7 && lon > 139.6 && lon < 139.8) {
         return "Asia/Tokyo";
     }
-    
-    // INDONESIA
-    if (lon > 95 && lon < 141) {
-        if (lon > 114.5) return "Asia/Jayapura";     // Papua
-        if (lon > 118.5) return "Asia/Makassar";     // Bali, Sulawesi
-        return "Asia/Jakarta";                       // Jawa, Sumatra
+    // London, UK
+    if (lat > 51.5 && lat < 51.6 && lon > -0.2 && lon < 0) {
+        return "Europe/London";
+    }
+    // New York, USA
+    if (lat > 40.7 && lat < 40.8 && lon > -74.1 && lon < -73.9) {
+        return "America/New_York";
+    }
+    // Sydney, Australia
+    if (lat > -33.9 && lat < -33.8 && lon > 151.1 && lon < 151.2) {
+        return "Australia/Sydney";
+    }
+    // Paris, France
+    if (lat > 48.85 && lat < 48.86 && lon > 2.34 && lon < 2.35) {
+        return "Europe/Paris";
+    }
+    // Bangkok, Thailand
+    if (lat > 13.7 && lat < 13.8 && lon > 100.4 && lon < 100.5) {
+        return "Asia/Bangkok";
+    }
+    // Seoul, South Korea
+    if (lat > 37.5 && lat < 37.6 && lon > 126.9 && lon < 127.0) {
+        return "Asia/Seoul";
+    }
+    // Dubai, UAE
+    if (lat > 25.2 && lat < 25.3 && lon > 55.2 && lon < 55.3) {
+        return "Asia/Dubai";
+    }
+    // Beijing, China
+    if (lat > 39.9 && lat < 40.0 && lon > 116.3 && lon < 116.4) {
+        return "Asia/Shanghai";
     }
     
-    // DEFAULT
+    // DEFAULT: UTC (jangan Asia/Jakarta!)
+    console.warn('⚠️ No specific timezone found, returning UTC');
     return "UTC";
 }
 
-    // ==================== TIME HANDLING ====================
 
-    // ==================== TIME HANDLING ====================
 
 getLocalHour() {
-    if (!this.timezone) {
-        console.warn("⚠️ No timezone set, using browser time");
-        return new Date().getHours();
-    }
+    const timezone = this.timezone || 'Asia/Jakarta';
     
     try {
         const now = new Date();
         const options = { 
-            timeZone: this.timezone,
+            timeZone: timezone,
             hour: '2-digit', 
             hour12: false 
         };
         const timeString = now.toLocaleTimeString('en-US', options);
-        const hour = parseInt(timeString.split(':')[0]);
-        
-        // Debug log
-        console.log(`🕐 getLocalHour: Browser hour=${now.getHours()}, ${this.timezone} hour=${hour}`);
-        
-        return hour;
+        return parseInt(timeString.split(':')[0]);
     } catch (error) {
-        console.error("❌ Cannot get local hour:", error);
-        console.warn("⚠️ Falling back to browser time");
         return new Date().getHours();
     }
 }
+
+
+
 stopTimeUpdates() {
     console.log(`🔴 Attempting to stop timer. Current timer ID: ${this.timeUpdateInterval}`);
     
@@ -1215,81 +1899,234 @@ updateTimePeriod() {
     }
 }
 
+   // ==================== SIMPLE TIMEZONE FIX ====================
+// ==================== TIMEZONE FIX - 100% AKURAT ====================
+fixIndonesianTimezone() {
+    if (!this.currentLocation || !this.currentLocation.province) {
+        console.log("❌ No province to fix");
+        return;
+    }
     
+    const provinceName = this.currentLocation.province;
+    console.log(`🔍 Fixing timezone for: "${provinceName}"`);
+    
+    // CARI DI DATA PROVINSI - 100% AKURAT
+    for (const prov of this.INDONESIA_PROVINCES) {
+        if (prov.name === provinceName) {
+            console.log(`✅ Found exact match: ${prov.name} -> ${prov.timezone}`);
+            this.timezone = prov.timezone;
+            this.currentLocation.timezone = prov.timezone;
+            return;
+        }
+    }
+    
+    // JIKA TIDAK EXACT MATCH, COBA PARTIAL MATCH
+    const provinceLower = provinceName.toLowerCase();
+    
+    // WIT DULU
+    if (provinceLower.includes('papua') || provinceLower.includes('maluku')) {
+        console.log(`✅ Partial match WIT: ${provinceName} -> Asia/Jayapura`);
+        this.timezone = "Asia/Jayapura";
+        this.currentLocation.timezone = "Asia/Jayapura";
+        return;
+    }
+    
+    // WITA
+    const witaKeywords = ['bali', 'sulawesi', 'nusa tenggara', 'kalimantan timur', 
+                         'kalimantan selatan', 'kalimantan utara', 'gorontalo'];
+    
+    for (const keyword of witaKeywords) {
+        if (provinceLower.includes(keyword)) {
+            console.log(`✅ Partial match WITA: ${provinceName} -> Asia/Makassar (keyword: ${keyword})`);
+            this.timezone = "Asia/Makassar";
+            this.currentLocation.timezone = "Asia/Makassar";
+            return;
+        }
+    }
+    
+    // DEFAULT WIB
+    console.log(`ℹ️ Default to WIB: ${provinceName} -> Asia/Jakarta`);
+    this.timezone = "Asia/Jakarta";
+    this.currentLocation.timezone = "Asia/Jakarta";
+}
+
     startTimeUpdates() {
-    console.log(`🟢 STARTING TIMER. Current timezone: "${this.timezone}"`);
+    // Stop timer lama
+    if (this.timeUpdateInterval) {
+        clearInterval(this.timeUpdateInterval);
+    }
     
-    // Stop existing interval jika ada
-    this.stopTimeUpdates();
+    // Jika tidak ada lokasi yang dipilih, gunakan browser time
+    if (!this.currentLocation || !this.timezone) {
+        console.log("🌐 No location selected, using browser time");
+        this.updateBrowserTime();
+        return;
+    }
     
-    // **LOCK timezone saat timer dibuat - INI KUNCI UTAMA**
-    const lockedTimezone = this.timezone || 'Asia/Jakarta';
-    console.log(`🔒 Timer locked to timezone: "${lockedTimezone}"`);
+    const timezone = this.timezone || 'Asia/Jakarta';
     
-    const updateClock = () => {
+    // Fungsi untuk update waktu
+    const updateTime = () => {
         const now = new Date();
         
-        // **UPDATE JAM DENGAN LOCKED TIMEZONE**
-        const timeElement = document.getElementById('currentTime');
-        if (timeElement) {
-            try {
-                // PAKAI lockedTimezone, BUKAN this.timezone
-                const newTime = now.toLocaleTimeString('id-ID', {
-                    timeZone: lockedTimezone,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-                
-                // Debug: cek perbedaan
-                if (timeElement.textContent !== newTime) {
-                    console.log(`⏰ Time updated: "${timeElement.textContent}" → "${newTime}"`);
-                    console.log(`   Browser time: ${now.toLocaleTimeString('id-ID')}, Locked TZ: ${lockedTimezone}`);
-                }
-                
-                timeElement.textContent = newTime;
-                
-            } catch (e) {
-                console.warn(`⚠️ Timezone error for ${lockedTimezone}:`, e.message);
-                timeElement.textContent = now.toLocaleTimeString('id-ID');
+        try {
+            // Format waktu untuk timezone
+            const timeStr = now.toLocaleTimeString('id-ID', {
+                timeZone: timezone,
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const dateStr = now.toLocaleDateString('id-ID', {
+                timeZone: timezone,
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Update tampilan
+            const timeElement = document.getElementById('currentTime');
+            const dateElement = document.getElementById('dataTimestamp');
+            
+            if (timeElement) {
+                timeElement.textContent = timeStr;
+                timeElement.style.color = '#0066cc';
             }
-        }
-        
-        // **UPDATE TANGGAL DENGAN LOCKED TIMEZONE**
-        const dateElement = document.getElementById('dataTimestamp');
-        if (dateElement) {
-            try {
-                dateElement.textContent = now.toLocaleDateString('id-ID', {
-                    timeZone: lockedTimezone,
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            } catch (e) {
-                dateElement.textContent = now.toLocaleDateString('id-ID', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
+            if (dateElement) {
+                dateElement.textContent = dateStr;
+                dateElement.style.color = '#0066cc';
             }
+            
+            // Update timezone info display
+const tzInfoElement = document.getElementById('timezoneInfo');
+if (tzInfoElement) {
+    const displayText = this.formatTimezoneForDisplay(timezone);
+    const color = this.getTimezoneColor(timezone);
+    
+    tzInfoElement.textContent = displayText;
+    tzInfoElement.style.color = color;
+}
+            
+            // Update time period
+            this.updateTimePeriodWithTimezone(timezone);
+            
+        } catch (error) {
+            console.error("❌ Timezone error, falling back to browser time:", error);
+            this.updateBrowserTime();
         }
-        
-        // Update periode waktu dengan timezone yang benar
-        this.updateTimePeriodWithTimezone(lockedTimezone);
     };
     
-    // Jalankan segera
-    updateClock();
+    // Jalankan sekarang
+    updateTime();
     
-    // Set interval untuk update setiap detik
-    this.timeUpdateInterval = setInterval(updateClock, 1000);
+    // Update setiap detik
+    this.timeUpdateInterval = setInterval(updateTime, 1000);
+    console.log(`🟢 Timer started with timezone: ${timezone}`);
+}
+
+// Method baru untuk browser time
+updateBrowserTime() {
+    const now = new Date();
     
-    console.log(`✅ Timer started. ID: ${this.timeUpdateInterval}, Locked TZ: "${lockedTimezone}"`);
-    console.log('='.repeat(50));
+    const timeElement = document.getElementById('currentTime');
+    const dateElement = document.getElementById('dataTimestamp');
     
-    return this.timeUpdateInterval;
+    if (timeElement) {
+        timeElement.textContent = now.toLocaleTimeString('id-ID');
+        timeElement.style.color = '#666';
+    }
+    
+    if (dateElement) {
+        dateElement.textContent = now.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        dateElement.style.color = '#666';
+    }
+    
+    // Kosongkan timezone display
+    const tzInfoElement = document.getElementById('timezoneInfo');
+    if (tzInfoElement) {
+        tzInfoElement.textContent = "--";
+        tzInfoElement.style.color = "#666";
+    }
+    
+    // Update time period sederhana
+    const hour = now.getHours();
+    this.updateTimePeriodSimple(hour);
+}
+
+// Method baru untuk update time
+updateSingleTimeDisplay() {
+    const now = new Date();
+    
+    try {
+        // Target timezone
+        const targetTime = now.toLocaleTimeString('id-ID', {
+            timeZone: this.timezone,
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        
+        const targetDate = now.toLocaleDateString('id-ID', {
+            timeZone: this.timezone,
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        // Update elements
+        const timeElement = document.getElementById('currentTime');
+        const dateElement = document.getElementById('dataTimestamp');
+        
+        if (timeElement) {
+            timeElement.textContent = targetTime;
+            timeElement.style.color = '#0066cc';
+        }
+        
+        if (dateElement) {
+            dateElement.textContent = targetDate;
+        }
+        
+        // Update time period
+        this.updateTimePeriodWithTimezone(this.timezone);
+        
+    } catch (error) {
+        console.error(`❌ Timezone error: ${this.timezone}`, error);
+        
+        // Fallback ke browser time
+        const timeElement = document.getElementById('currentTime');
+        if (timeElement) {
+            timeElement.textContent = now.toLocaleTimeString('id-ID');
+            timeElement.style.color = '#ff3300';
+        }
+    }
+}
+
+
+// Tambahkan method helper untuk fallback timezone
+getFallbackTimezone(failedTimezone) {
+    // Mapping fallback timezones
+    const fallbackMap = {
+        'Asia/Jakarta': 'Asia/Singapore',
+        'Asia/Singapore': 'Asia/Jakarta',
+        'Asia/Tokyo': 'Asia/Shanghai',
+        'Asia/Shanghai': 'Asia/Tokyo',
+        'Europe/London': 'Europe/Paris',
+        'Europe/Paris': 'Europe/London',
+        'America/New_York': 'America/Chicago',
+        'America/Chicago': 'America/New_York'
+    };
+    
+    return fallbackMap[failedTimezone] || 'UTC';
 }
     
     // ==================== CHART SYSTEM ====================
@@ -1390,106 +2227,115 @@ updateTimePeriod() {
     
     // ========== NEW METHOD: Update Time Period dengan Timezone Tertentu ==========
 updateTimePeriodWithTimezone(timezone) {
-    const now = new Date();
+    console.log(`🌐 Updating time for timezone: ${timezone}`);
     
-    let hour;
     try {
-        const options = { timeZone: timezone, hour: '2-digit', hour12: false };
-        const timeString = now.toLocaleTimeString('en-US', options);
-        hour = parseInt(timeString.split(':')[0]);
-    } catch (e) {
-        console.warn(`⚠️ Cannot get hour for timezone ${timezone}:`, e);
-        hour = now.getHours();
+        const now = new Date();
+        
+        // Dapatkan jam di timezone target
+        let hour;
+        try {
+            const timeString = now.toLocaleTimeString('en-US', { 
+                timeZone: timezone, 
+                hour: '2-digit', 
+                hour12: false 
+            });
+            hour = parseInt(timeString.split(':')[0]);
+        } catch (e) {
+            hour = now.getHours();
+        }
+        
+        // Tentukan periode dengan LOGIKA SAMA untuk semua
+        let period = '', periodIcon = '', periodColor = '';
+        
+        if (hour >= 5 && hour < 11) {
+            period = 'Pagi';
+            periodIcon = '🌅';
+            periodColor = '#FF8C00';
+        } else if (hour >= 11 && hour < 15) {
+            period = 'Siang';
+            periodIcon = '☀️';
+            periodColor = '#FF4500';
+        } else if (hour >= 15 && hour < 18) {
+            period = 'Sore';
+            periodIcon = '🌇';
+            periodColor = '#FF8C00';
+        } else if (hour >= 18 && hour < 24) {
+            period = 'Malam';
+            periodIcon = '🌙';
+            periodColor = '#4169E1';
+        } else {
+            period = 'Dini Hari';
+            periodIcon = '🌌';
+            periodColor = '#2F4F4F';
+        }
+        
+        // Update dayNightIndicator (PERIODE)
+        const dayNightElement = document.getElementById('dayNightIndicator');
+        if (dayNightElement) {
+            dayNightElement.innerHTML = `${periodIcon} ${period}`;
+            dayNightElement.style.color = periodColor;
+        }
+        
+        // Update timeStatus dengan LABEL SAMA
+        const timeStatusElement = document.getElementById('timeStatus');
+        if (timeStatusElement) {
+            timeStatusElement.innerHTML = `${periodIcon} ${period}`;
+            timeStatusElement.style.color = periodColor;
+        }
+        
+        console.log(`✅ Period: ${period} (Hour: ${hour}, Timezone: ${timezone})`);
+        
+    } catch (error) {
+        console.error('❌ Error in updateTimePeriodWithTimezone:', error);
     }
-    
-    // Determine time period berdasarkan timezone
-    let period = '';
-    let periodIcon = '';
-    let periodColor = '';
-    
-    if (hour >= 5 && hour < 11) {
-        period = 'Pagi';
-        periodIcon = '🌅';
-        periodColor = '#FF8C00';
-    } else if (hour >= 11 && hour < 15) {
-        period = 'Siang';
-        periodIcon = '☀️';
-        periodColor = '#FF4500';
-    } else if (hour >= 15 && hour < 18) {
-        period = 'Sore';
-        periodIcon = '🌇';
-        periodColor = '#FF8C00';
-    } else if (hour >= 18 && hour < 24) {
-        period = 'Malam';
-        periodIcon = '🌙';
-        periodColor = '#4169E1';
-    } else {
-        period = 'Dini Hari';
-        periodIcon = '🌌';
-        periodColor = '#2F4F4F';
-    }
-    
-    // Update dayNightIndicator (Periode)
-    const dayNightElement = document.getElementById('dayNightIndicator');
-    if (dayNightElement) {
-        dayNightElement.innerHTML = `${periodIcon} ${period}`;
-        dayNightElement.style.color = periodColor;
-        dayNightElement.style.fontWeight = 'bold';
-    }
-    
-    // Update time status
-    const timeStatusElement = document.getElementById('timeStatus');
-    if (timeStatusElement) {
-        timeStatusElement.innerHTML = `${periodIcon} ${period} Hari`;
-        timeStatusElement.style.color = periodColor;
-    }
-    
-    console.log(`🌓 Time period for ${timezone}: ${period} (Hour: ${hour})`);
 }
+
 
     // ==================== EVENT LISTENERS ====================
     initEventListeners() {
-        console.log("🔗 Initializing event listeners...");
-        
-        // Location detection button
-        const detectBtn = document.getElementById('detectLocation');
-        if (detectBtn) {
-            detectBtn.addEventListener('click', () => {
-                this.detectUserLocation();
-            });
-        }
-        
-        // City search button
-        const searchBtn = document.getElementById('searchCity');
-        if (searchBtn) {
-            searchBtn.addEventListener('click', () => {
-                this.searchCityUniversal();
-            });
-        }
-        
-        // Use coordinates button
-        const coordsBtn = document.getElementById('useCoordsBtn');
-        if (coordsBtn) {
-            coordsBtn.addEventListener('click', () => {
-                this.useCoordinates();
-            });
-        }
-        
-        // Fetch data button
-        const fetchBtn = document.getElementById('fetchData');
-        if (fetchBtn) {
-            fetchBtn.addEventListener('click', () => {
-                this.fetchData();
-            });
-        }
-        
-        // Refresh button
-        const refreshBtn = document.getElementById('refreshData');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                this.fetchData();
-            });
-        }
+    console.log("🔗 Initializing event listeners...");
+    
+    // Location detection button - JANGAN auto-fetch
+    const detectBtn = document.getElementById('detectLocation');
+    if (detectBtn) {
+        detectBtn.addEventListener('click', () => {
+            this.detectUserLocation(); // Ini hanya deteksi, tidak fetch
+        });
+    }
+    
+    // City search button - JANGAN auto-fetch
+    const searchBtn = document.getElementById('searchCity');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            this.searchCityUniversal(); // Ini hanya search, tidak fetch
+        });
+    }
+    
+    // Use coordinates button - JANGAN auto-fetch
+    const coordsBtn = document.getElementById('useCoordsBtn');
+    if (coordsBtn) {
+        coordsBtn.addEventListener('click', () => {
+            this.useCoordinates(); // Ini hanya set koordinat, tidak fetch
+        });
+    }
+    
+    // HANYA ini yang trigger fetch data
+    const fetchBtn = document.getElementById('fetchData');
+    if (fetchBtn) {
+        fetchBtn.addEventListener('click', () => {
+            this.fetchData(); // Ini fetch data
+        });
+    }
+    
+    // Refresh button - fetch data
+    const refreshBtn = document.getElementById('refreshData');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            this.fetchData();
+        });
+    }
+
         
         // Start monitoring button
         const startMonitorBtn = document.getElementById('startMonitoring');
@@ -1547,29 +2393,28 @@ updateTimePeriodWithTimezone(timezone) {
     
     // ==================== LOCATION METHODS ====================
     setDefaultLocation() {
-    this.currentLocation = {
-        lat: -6.2088,
-        lon: 106.8456,
-        name: "Jakarta",
-        country: "ID",
-        timezone: "Asia/Jakarta"
-    };
+    console.log("📍 Setting default location...");
     
-    // Update input fields
+    // JANGAN langsung set location, biarin kosong dulu
+    this.currentLocation = null;
+    this.timezone = 'Asia/Jakarta'; // Default timezone saja
+    
+    // Kosongkan semua input fields
     const cityInput = document.getElementById('cityInput');
     const latInput = document.getElementById('latInput');
     const lonInput = document.getElementById('lonInput');
     
-    if (cityInput) cityInput.value = "Jakarta, Indonesia";
-    if (latInput) latInput.value = "-6.2088";
-    if (lonInput) lonInput.value = "106.8456";
+    if (cityInput) cityInput.value = "";
+    if (latInput) latInput.value = "";
+    if (lonInput) lonInput.value = "";
     
-    this.timezone = "Asia/Jakarta";
-    this.updateLocationStatus("Lokasi default: Jakarta, Indonesia");
+    // Update status location
+    this.updateLocationStatus("Silakan pilih lokasi");
     
-    // 🔴 HAPUS INI: this.updateTimeDisplay();
+    // Tampilkan placeholder data
+    this.showPlaceholderData();
     
-    console.log("📍 Default location set to Jakarta");
+    console.log("📍 Default location cleared, waiting for user input");
 }
     
     async detectUserLocation() {
@@ -1638,7 +2483,15 @@ updateTimePeriodWithTimezone(timezone) {
         // ====== TAMBAH INI ======
         this.timezone = this.currentLocation.timezone;
         console.log(`🔄 Timezone set to: ${this.timezone}`);
-        
+        // Update timezone display immediately
+const tzInfoElement = document.getElementById('timezoneInfo');
+if (tzInfoElement) {
+    const displayText = this.formatTimezoneForDisplay(this.timezone);
+    const color = this.getTimezoneColor(this.timezone);
+    
+    tzInfoElement.textContent = displayText;
+    tzInfoElement.style.color = color;
+}
         // ====== TAMBAH INI ======
         console.log("🟢 Restarting timer with detected location...");
         this.startTimeUpdates();
@@ -1827,7 +2680,16 @@ updateTimePeriodWithTimezone(timezone) {
         // ====== TAMBAH INI ======
         this.timezone = this.currentLocation.timezone;
         console.log(`🔄 Timezone set to: ${this.timezone}`);
-        
+        // Update display immediately
+const tzInfoElement = document.getElementById('timezoneInfo');
+if (tzInfoElement) {
+    const displayText = this.formatTimezoneForDisplay(this.timezone);
+    const color = this.getTimezoneColor(this.timezone);
+    
+    tzInfoElement.textContent = displayText;
+    tzInfoElement.style.color = color;
+    console.log(`✅ Timezone display: ${displayText}`);
+}
         const latInput = document.getElementById('latInput');
         const lonInput = document.getElementById('lonInput');
         
@@ -2487,10 +3349,17 @@ isNightTimeGlobal(hour, lat, lon) {
     
     // ==================== MAIN DATA FETCH ====================
     async fetchData() {
-        if (!this.currentLocation) {
-            this.showNotification("Pilih lokasi terlebih dahulu", "warning");
-            return;
-        }
+    
+    if (!this.currentLocation) {
+        this.showNotification("Pilih lokasi terlebih dahulu", "warning");
+        return;
+    }
+    
+    // ====== FIX TIMEZONE SEBELUM FETCH ======
+    if (this.currentLocation.country === 'ID') {
+        console.log("🇮🇩 Pre-fetch: Fixing Indonesian timezone");
+        this.fixIndonesianTimezone();
+    }
         
         try {
             this.validateCoordinates(this.currentLocation.lat, this.currentLocation.lon);
@@ -3214,6 +4083,14 @@ isNightTimeGlobal(hour, lat, lon) {
     
     const data = this.currentData;
     
+    // ====== FIX TIMEZONE PASTI ======
+    if ((this.currentLocation && this.currentLocation.country === 'ID') ||
+        (data.country && data.country === 'ID')) {
+        
+        console.log("🇮🇩 Indonesian location, fixing timezone...");
+        this.fixIndonesianTimezone();
+    }
+    
     const updateElement = (id, value) => {
         const element = document.getElementById(id);
         if (element) {
@@ -3333,59 +4210,75 @@ isNightTimeGlobal(hour, lat, lon) {
         }
     }
     
-    console.log("✅ Weather info updated successfully");
-    
-    // ========== FIX TIMEZONE DISPLAY ==========
-    // Update timezone info (biar "Zona Waktu" gak kosong)
-    const timezoneElement = document.getElementById('timezoneInfo');
-    if (timezoneElement && data.cityName) {
-        const city = data.cityName.toLowerCase();
-        let newTimezone = 'Asia/Jakarta'; // default
+    // ========== TAMBAH: HANDLE KOSONG ==========
+    if (!data.cityName || data.cityName === 'Unknown City' || data.cityName === 'Demo Location') {
+        const locationElement = document.getElementById('locationName');
+        if (locationElement) locationElement.textContent = "--";
         
-        if (city.includes('london')) {
-            timezoneElement.textContent = 'GMT/BST';
-            newTimezone = 'Europe/London';
-        } else if (city.includes('singapore')) {
-            timezoneElement.textContent = 'SGT (GMT+8)';
-            newTimezone = 'Asia/Singapore';
-        } else if (city.includes('new york') || city.includes('nyc')) {
-            timezoneElement.textContent = 'EST (GMT-5)';
-            newTimezone = 'America/New_York';
-        } else if (city.includes('tokyo')) {
-            timezoneElement.textContent = 'JST (GMT+9)';
-            newTimezone = 'Asia/Tokyo';
-        } else if (city.includes('sydney')) {
-            timezoneElement.textContent = 'AEDT (GMT+11)';
-            newTimezone = 'Australia/Sydney';
-        } else if (city.includes('bali') || city.includes('makassar')) {
-            timezoneElement.textContent = 'WITA (GMT+8)';
-            newTimezone = 'Asia/Makassar';
-        } else if (city.includes('jayapura') || city.includes('papua')) {
-            timezoneElement.textContent = 'WIT (GMT+9)';
-            newTimezone = 'Asia/Jayapura';
-        } else if (city.includes('jakarta') || city.includes('bandung') || 
-                   city.includes('yogyakarta') || city.includes('semarang')) {
-            timezoneElement.textContent = 'WIB (GMT+7)';
-            newTimezone = 'Asia/Jakarta';
-        } else {
-            // Default untuk kota Indonesia lainnya
-            timezoneElement.textContent = 'WIB (GMT+7)';
-            newTimezone = 'Asia/Jakarta';
+        const timezoneElement = document.getElementById('timezoneInfo');
+        if (timezoneElement) {
+            timezoneElement.textContent = "--";
+            timezoneElement.style.color = "#666";
         }
         
-        // Check if timezone has changed
-        const previousTimezone = this.timezone;
-        this.timezone = newTimezone;
+        const coordinatesElement = document.getElementById('coordinatesText');
+        if (coordinatesElement) coordinatesElement.textContent = "--";
         
-        // Restart timer hanya jika timezone berubah
-        setTimeout(() => {
-            if (previousTimezone !== newTimezone) {
-                console.log(`🔄 Timezone changed: ${previousTimezone} → ${newTimezone}, restarting timer`);
-                this.stopTimeUpdates();
-                this.startTimeUpdates();
-            }
-        }, 1000);
+        console.log("⚠️ Location data empty, showing placeholder");
     }
+
+    console.log("✅ Weather info updated successfully");
+    
+    // ========== TIMEZONE DISPLAY ==========
+const timezoneElement = document.getElementById('timezoneInfo');
+if (timezoneElement) {
+    const tz = this.timezone || 'UTC';
+    
+    // Mapping untuk display yang user-friendly
+    if (tz === 'Asia/Makassar') {
+        timezoneElement.textContent = 'WITA (GMT+8)';
+        timezoneElement.style.color = '#0066cc';
+    } else if (tz === 'Asia/Jayapura') {
+        timezoneElement.textContent = 'WIT (GMT+9)';
+        timezoneElement.style.color = '#ff6600';
+    } else if (tz === 'Asia/Jakarta') {
+        timezoneElement.textContent = 'WIB (GMT+7)';
+        timezoneElement.style.color = '#4CAF50';
+    } else if (tz === 'Asia/Singapore') {
+        timezoneElement.textContent = 'SGT (GMT+8)';
+        timezoneElement.style.color = '#9b59b6';
+    } else if (tz === 'Asia/Tokyo') {
+        timezoneElement.textContent = 'JST (GMT+9)';
+        timezoneElement.style.color = '#e74c3c';
+    } else if (tz === 'Europe/London') {
+        timezoneElement.textContent = 'GMT/BST';
+        timezoneElement.style.color = '#3498db';
+    } else if (tz === 'America/New_York') {
+        timezoneElement.textContent = 'EST (GMT-5)';
+        timezoneElement.style.color = '#2ecc71';
+    } else if (tz === 'Australia/Sydney') {
+        timezoneElement.textContent = 'AEST (GMT+10)';
+        timezoneElement.style.color = '#1abc9c';
+    } else if (tz === 'Asia/Bangkok') {
+        timezoneElement.textContent = 'ICT (GMT+7)';
+        timezoneElement.style.color = '#e67e22';
+    } else if (tz === 'Asia/Seoul') {
+        timezoneElement.textContent = 'KST (GMT+9)';
+        timezoneElement.style.color = '#2c3e50';
+    } else if (tz === 'Asia/Dubai') {
+        timezoneElement.textContent = 'GST (GMT+4)';
+        timezoneElement.style.color = '#ff6b6b';
+    } else if (tz === 'UTC') {
+        timezoneElement.textContent = 'UTC (GMT+0)';
+        timezoneElement.style.color = '#666';
+    } else {
+        timezoneElement.textContent = tz;
+        timezoneElement.style.color = '#666';
+    }
+    
+    timezoneElement.style.fontWeight = 'bold';
+}
+
     
     // Update time status (biar "Status Waktu" gak kosong)
     const timeStatusElement = document.getElementById('timeStatus');
@@ -3416,6 +4309,36 @@ isNightTimeGlobal(hour, lat, lon) {
     }
 }
     
+    // ==================== SIMPLE TIMEZONE FORMATTER ====================
+formatTimezoneForDisplay(timezone) {
+    const tz = timezone || this.timezone || 'Asia/Jakarta';
+    
+    // Mapping sederhana
+    if (tz === 'Asia/Makassar') return 'WITA (GMT+8)';
+    if (tz === 'Asia/Jayapura') return 'WIT (GMT+9)';
+    if (tz === 'Asia/Jakarta') return 'WIB (GMT+7)';
+    if (tz === 'Asia/Singapore') return 'SGT (GMT+8)';
+    if (tz === 'Asia/Tokyo') return 'JST (GMT+9)';
+    if (tz === 'Europe/London') return 'GMT/BST';
+    if (tz === 'America/New_York') return 'EST (GMT-5)';
+    
+    return tz;
+}
+
+getTimezoneColor(timezone) {
+    const tz = timezone || this.timezone || 'Asia/Jakarta';
+    
+    if (tz === 'Asia/Makassar') return '#0066cc'; // WITA - Biru
+    if (tz === 'Asia/Jayapura') return '#ff6600'; // WIT - Orange
+    if (tz === 'Asia/Jakarta') return '#4CAF50';  // WIB - Hijau
+    if (tz === 'Asia/Singapore') return '#9b59b6'; // SGT - Ungu
+    if (tz === 'Asia/Tokyo') return '#e74c3c';    // JST - Merah
+    if (tz === 'Europe/London') return '#3498db'; // GMT - Biru muda
+    if (tz === 'America/New_York') return '#2ecc71'; // EST - Hijau muda
+    
+    return '#666'; // Default grey
+}
+
     updateRecommendations() {
         if (!this.currentData) return;
         
@@ -4176,15 +5099,15 @@ isNightTimeGlobal(hour, lat, lon) {
                 const latInput = document.getElementById('latInput');
                 const lonInput = document.getElementById('lonInput');
                 
-                if (cityInput && this.currentLocation.name) {
-                    cityInput.value = `${this.currentLocation.name}${this.currentLocation.country ? ', ' + this.currentLocation.country : ''}`;
-                }
-                if (latInput && this.currentLocation.lat) {
-                    latInput.value = this.currentLocation.lat;
-                }
-                if (lonInput && this.currentLocation.lon) {
-                    lonInput.value = this.currentLocation.lon;
-                }
+                //if (cityInput && this.currentLocation.name) {
+               //     cityInput.value = `${this.currentLocation.name}${this.currentLocation.country ? ', ' + this.currentLocation.country : ''}`;
+              //  }
+              //  if (latInput && this.currentLocation.lat) {
+               //     latInput.value = this.currentLocation.lat;
+              //  }
+               // if (lonInput && this.currentLocation.lon) {
+               //     lonInput.value = this.currentLocation.lon;
+               // }
                 
                 console.log("📍 Loaded saved location:", this.currentLocation);
             }
