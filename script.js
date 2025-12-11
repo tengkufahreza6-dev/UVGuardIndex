@@ -1,6 +1,8 @@
 // ==================== UV GUARD Index - COMPLETE VERSION (OPTIMIZED & REALISTIC) ====================//
 class UVGuardIndex {
     constructor() {
+        this.masterVolume = 3.0; // Atur 0.0 – 1.0 (0.7 keras, 1.0 sangat keras)
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.dataHistory = [];
         this.currentData = null;
         this.monitoringInterval = null;
@@ -173,6 +175,74 @@ console.log("=".repeat(60));
         this.init();
     }
     
+    playTone(freq = 440, duration = 200, volume = 0.2) {
+    const osc = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+
+    osc.frequency.value = freq;
+    // volume * masterVolume
+    gain.gain.value = volume * this.masterVolume;
+
+    osc.connect(gain);
+    gain.connect(this.audioCtx.destination);
+
+    osc.start();
+
+    osc.stop(this.audioCtx.currentTime + duration / 1000);
+}
+
+    playUVCategorySound(uv) {
+    if (uv <= 2.9) {
+        // UV rendah = beep lembut
+        this.playTone(300, 180, 0.15);
+    } else if (uv <= 5.9) {
+        // UV sedang = beep medium
+        this.playTone(500, 180, 0.18);
+    } else if (uv <= 7.9) {
+        // UV tinggi = beep lebih tajam
+        this.playTone(700, 200, 0.2);
+    } else if (uv <= 10.9) {
+        // UV sangat tinggi = 2x beep cepat
+        this.playTone(850, 160, 0.22);
+        setTimeout(() => this.playTone(850, 160, 0.22), 180);
+    } else {
+        // UV ekstrem = sirene pendek
+        this.playTone(900, 200, 0.24);
+        setTimeout(() => this.playTone(1100, 200, 0.24), 220);
+    }
+}
+
+    checkUVRise() {
+    if (this.dataHistory.length < 2) return;
+
+    const prev = this.dataHistory[this.dataHistory.length - 2].uvIndex;
+    const curr = this.dataHistory[this.dataHistory.length - 1].uvIndex;
+
+    const diff = curr - prev;
+
+    // WASPADA (0.5 – 0.9)
+    if (diff >= 0.5 && diff < 1.0) {
+        this.showNotification(
+            `Kenaikan UV terdeteksi: +${diff.toFixed(1)} (Waspada)`,
+            "warning"
+        );
+        this.playTone(900, 200, 0.22); // suara peringatan
+        return;
+    }
+
+    // BAHAYA (1.0+)
+    if (diff >= 1.0) {
+        this.showNotification(
+            `Kenaikan UV besar: +${diff.toFixed(1)} (Bahaya!)`,
+            "error"
+        );
+        // suara lebih tajam
+        this.playTone(1200, 250, 0.25);
+        setTimeout(() => this.playTone(1200, 250, 0.25), 250);
+    }
+}
+
+
     // ==================== USER GUIDE SYSTEM ====================
     initUserGuide() {
         console.log("📚 Initializing user guide system...");
@@ -3976,7 +4046,9 @@ isNightTimeGlobal(hour, lat, lon) {
         this.updateAllUI();
         
         this.saveHistory();
-        
+        // 🔥 Tambahan notifikasi UV naik & suara kategori UV
+        this.checkUVRise();
+        this.playUVCategorySound(data.uvIndex);
         const sourceText = this.isDemoMode ? "Demo" : "API";
         const timeText = data.isDaytime ? "siang" : "malam";
         this.showNotification(`Data ${sourceText} berhasil diperbarui (UV: ${data.uvIndex}, ${timeText})`, "success");
