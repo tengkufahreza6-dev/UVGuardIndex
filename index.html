@@ -10,6 +10,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -42,8 +56,7 @@
                 <span class="hero-subtitle">Real-time dengan Prediksi Matematis & Rekomendasi Kesehatan</span>
             </h1>
             <p class="hero-description">
-                Platform komprehensif untuk monitoring UV Index, analisis turunan matematika, 
-                dan rekomendasi perlindungan berdasarkan lokasi Anda.
+                Platform komprehensif untuk monitoring UV Index dan rekomendasi perlindungan berdasarkan lokasi Anda.
             </p>
             <div class="hero-stats">
                 <div class="stat">
@@ -56,7 +69,7 @@
                 <div class="stat">
                     <i class="fas fa-calculator"></i>
                     <div>
-                        <h3>Analisis Turunan</h3>
+                        <h3>Analisis Laju Perubahan</h3>
                         <p>Konsep Kalkulus</p>
                     </div>
                 </div>
@@ -414,43 +427,43 @@
         <!-- Section 2: Mathematical Analysis -->
         <section class="section" id="analysis">
             <div class="section-header">
-                <h2><i class="fas fa-chart-line"></i> Analisis Matematis (Konsep Turunan)</h2>
+                <h2><i class="fas fa-chart-line"></i> Analisis Matematis </h2>
                 <div class="section-subtitle">
-                    Pemodelan dan prediksi menggunakan kalkulus diferensial
+                Laju Perubahan, Prediksi & Optimasi
                 </div>
             </div>
 
             <div class="grid-3col">
-                <!-- Derivative Analysis -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-sliders-h"></i> Turunan & Laju Perubahan</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="math-display">
-                            <div class="equation">
-                                Ds - Do/Do
-                            </div>
-                            <div class="equation-desc">
-                                Ds = Data Sesudah.
-                                Do = Data Sebelum.
-                                Turunan pertama menunjukkan laju perubahan instant
-                            </div>
-                            <div class="current-rate">
-                                <div class="rate-label">Laju saat ini:</div>
-                                <div class="rate-value" id="currentRate">0.00</div>
-                                <div class="rate-unit">unit/jam</div>
-                            </div>
-                            <div class="trend-indicator" id="trendIndicator">
-                                <i class="fas fa-arrow-right"></i>
-                                <span>Stabil</span>
-                            </div>
-                            <div class="rate-interpretation" id="rateInterpretation">
-                                Tidak ada perubahan signifikan
-                            </div>
-                        </div>
-                    </div>
+    <!-- Derivative Analysis -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-sliders-h"></i>Laju Perubahan</h3>
+        </div>
+        <div class="card-body">
+            <div class="math-display">
+                <div class="equation">
+                    \[ \frac{dx}{dt} = \frac{x_1 - x_0}{\Delta t} \]
                 </div>
+                <div class="equation-desc">
+                    \(x_1\) = Data sesudah <br>
+                    \(x_0\) = Data sebelum <br>
+                    \(\Delta t\) = Selang waktu pengukuran
+                </div>
+                <div class="current-rate">
+                    <div class="rate-label">Laju saat ini:</div>
+                    <div class="rate-value" id="currentRate">0.00</div>
+                    <div class="rate-unit">unit/jam</div>
+                </div>
+                <div class="trend-indicator" id="trendIndicator">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Stabil</span>
+                </div>
+                <div class="rate-interpretation" id="rateInterpretation">
+                    Tidak ada perubahan signifikan
+                </div>
+            </div>
+        </div>
+    </div>
 
                 <!-- Predictions -->
                 <div class="card">
@@ -612,7 +625,7 @@
                                     <div class="skin-color" style="background: #ffdbac;"></div>
                                     <div class="skin-info">
                                         <strong>Tipe I</strong>
-                                        <small>Terbakar dalam 10 menit</small>
+                                        <small>Terbakar Sekitar 10 menit</small>
                                     </div>
                                 </div>
                                 <div class="skin-type" data-type="II">
@@ -633,14 +646,22 @@
                                     <div class="skin-color" style="background: #c68642;"></div>
                                     <div class="skin-info">
                                         <strong>Tipe IV</strong>
-                                        <small>40-50 menit</small>
+                                        <small>30-40 menit</small>
                                     </div>
                                 </div>
                                 <div class="skin-type" data-type="V">
                                     <div class="skin-color" style="background: #8d5524;"></div>
                                     <div class="skin-info">
                                         <strong>Tipe V</strong>
+                                        <small> Sekitar 45 menit</small>
+                                        </div>
+                                    </div>
+                                <div class="skin-type" data-type="V">
+                                    <div class="skin-color" style="background: #3F2818;"></div>
+                                    <div class="skin-info">
+                                        <strong>Tipe VI</strong>
                                         <small>60+ menit</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1219,7 +1240,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 UV Guard Index | Analisis Matematis UV Index | f'(UV) = Proteksi</p>
+            <p>&copy; 2025 UV Guard Index | Analisis Matematis UV Index |</p>
             <div class="footer-stats">
                 <span id="footerDataCount">0</span> data | 
                 <span id="footerUpdates">0</span> update hari ini | 

@@ -4411,185 +4411,346 @@ getTimezoneColor(timezone) {
     return '#666'; // Default grey
 }
 
-    updateRecommendations() {
-        if (!this.currentData) return;
-        
-        const uvIndex = this.currentData.uvIndex;
-        const uvLevel = this.getUVLevel(uvIndex);
-        const isDaytime = this.currentData.isDaytime;
-        
-        const recommendations = {
-            low: {
-                protection: [
-                    "SPF 15+ untuk aktivitas >1 jam",
-                    "Topi untuk perlindungan tambahan",
-                    "Kacamata hitam jika diperlukan"
-                ],
-                activities: [
-                    "Aman untuk semua aktivitas outdoor",
-                    "Ideal untuk olahraga pagi/sore",
-                    "Berjemur 15-30 menit untuk vitamin D"
-                ],
-                sunbath: {
-                    safeDuration: "30-60 menit",
-                    optimalDuration: "15-30 menit",
-                    risk: "Rendah",
-                    bestTime: "Pagi atau Sore"
-                }
-            },
-            moderate: {
-                protection: [
-                    "SPF 30+ wajib digunakan",
-                    "Topi bertepi lebar",
-                    "Kacamata hitam UV400",
-                    "Cari tempat teduh saat siang"
-                ],
-                activities: [
-                    "Batasi paparan 10:00-14:00",
-                    "Olahraga di pagi/sore hari",
-                    "Gunakan pakaian pelindung"
-                ],
-                sunbath: {
-                    safeDuration: "15-30 menit",
-                    optimalDuration: "10-15 menit",
-                    risk: "Sedang",
-                    bestTime: "Sebelum 10:00 atau setelah 15:00"
-                }
-            },
-            high: {
-                protection: [
-                    "SPF 50+ wajib digunakan",
-                    "Pakaian lengan panjang",
-                    "Topi lebar dan kacamata",
-                    "Hindari matahari langsung"
-                ],
-                activities: [
-                    "Hindari outdoor 10:00-16:00",
-                    "Aktivitas indoor disarankan",
-                    "Jika harus keluar, batasi waktu"
-                ],
-                sunbath: {
-                    safeDuration: "10-15 menit",
-                    optimalDuration: "5-10 menit",
-                    risk: "Tinggi",
-                    bestTime: "Hanya pagi sebelum 9:00"
-                }
-            },
-            veryHigh: {
-                protection: [
-                    "SPF 50+ dan reapplay setiap 2 jam",
-                    "Pakaian UPF 50+",
-                    "Payung atau tempat teduh",
-                    "Tetap di dalam ruangan jika mungkin"
-                ],
-                activities: [
-                    "Hindari semua aktivitas outdoor",
-                    "Jika harus keluar, sangat singkat",
-                    "Prioritaskan aktivitas indoor"
-                ],
-                sunbath: {
-                    safeDuration: "5-10 menit",
-                    optimalDuration: "Tidak disarankan",
-                    risk: "Sangat Tinggi",
-                    bestTime: "Hindari berjemur"
-                }
-            },
-            extreme: {
-                protection: [
-                    "Tetap di dalam ruangan",
-                    "Jika keluar, semua perlindungan maksimal",
-                    "Tutup semua kulit",
-                    "Gunakan sunscreen waterproof"
-                ],
-                activities: [
-                    "Hindari keluar rumah",
-                    "Aktivitas indoor saja",
-                    "Tunda perjalanan jika mungkin"
-                ],
-                sunbath: {
-                    safeDuration: "Tidak aman",
-                    optimalDuration: "Tidak disarankan",
-                    risk: "Ekstrem",
-                    bestTime: "Tidak ada waktu aman"
-                }
+    // ==================== RECOMMENDATIONS WITH OUTFIT ====================
+updateRecommendations() {
+    if (!this.currentData) return;
+    
+    const uvIndex = this.currentData.uvIndex;
+    const uvLevel = this.getUVLevel(uvIndex);
+    const isDaytime = this.currentData.isDaytime;
+    const currentHour = new Date().getHours();
+    
+    const recommendations = {
+        low: {
+            protection: [
+                "SPF 15+ untuk aktivitas lebih dari 1 jam",
+                "Topi dengan pinggiran minimal 5cm untuk perlindungan wajah",
+                "Kacamata hitam dengan UV protection 99-100%",
+                "Sunscreen pada area sensitif: hidung, telinga, leher",
+                "Gunakan lip balm dengan SPF 15+",
+                "Aplikasi sunscreen ulang setelah berenang atau berkeringat"
+            ],
+            activities: [
+                "Aman untuk semua aktivitas outdoor sepanjang hari",
+                "Ideal untuk jogging, bersepeda, atau hiking pagi",
+                "Berjemur 15-30 menit untuk produksi vitamin D optimal",
+                "Waktu terbaik olahraga: 07:00-10:00 atau 16:00-18:00",
+                "Anak-anak dapat bermain di luar dengan pengawasan normal",
+                "Foto outdoor dengan cahaya alami yang lembut"
+            ],
+            outfit: [
+                "Baju lengan pendek atau kaus berbahan katun",
+                "Celana pendek, rok pendek, atau capri pants",
+                "Topi baseball atau topi biasa untuk gaya",
+                "Kacamata hitam UV400 (opsional untuk kenyamanan)",
+                "Bahan: Katun, linen, rayon, atau bahan natural breathable",
+                "Warna: Putih, krem, pastel, atau warna terang yang memantulkan panas",
+                "Sepatu: Sandal, sepatu sneakers, atau sepatu terbuka",
+                "Aksesori: Jam tangan biasa, perhiasan ringan"
+            ],
+            sunbath: {
+                safeDuration: "30-60 menit",
+                optimalDuration: "15-30 menit untuk vitamin D",
+                risk: "Rendah (burn time: 60+ menit)",
+                bestTime: "Pagi (08:00-10:00) atau Sore (16:00-17:00)",
+                frequency: "3-4 kali per minggu",
+                position: "Bergantian depan-beluk setiap 10 menit",
+                caution: "Tetap gunakan SPF 15+ untuk wajah"
             }
-        };
-        
-        // Night time recommendations
-        if (!isDaytime || uvIndex === 0) {
-            const container = document.getElementById('recommendationsContainer');
-            if (container) {
-                container.innerHTML = `
-                    <div class="recommendation-card" data-level="night">
-                        <div class="recommendation-header">
-                            <div class="recommendation-icon">
-                                <i class="fas fa-moon"></i>
-                            </div>
-                            <div class="recommendation-title">🌙 Malam Hari</div>
-                        </div>
-                        <ul class="recommendation-list">
-                            <li><i class="fas fa-check-circle"></i> Tidak ada radiasi UV</li>
-                            <li><i class="fas fa-check-circle"></i> Tidak perlu sunscreen</li>
-                            <li><i class="fas fa-check-circle"></i> Aman untuk aktivitas outdoor</li>
-                            <li><i class="fas fa-check-circle"></i> UV Index: 0 (Aman)</li>
-                        </ul>
-                    </div>
-                `;
+        },
+        moderate: {
+            protection: [
+                "SPF 30+ wajib digunakan 15 menit sebelum keluar",
+                "Topi bertepi lebar (minimal 7cm) untuk wajah dan leher",
+                "Kacamata hitam dengan lensa UV400 wajib",
+                "Sunscreen water resistant untuk aktivitas outdoor",
+                "Lip balm SPF 30+ dengan perlindungan UVA/UVB",
+                "Cari tempat teduh antara pukul 11:00-14:00",
+                "Reapply sunscreen setiap 2 jam atau setelah berkeringat"
+            ],
+            activities: [
+                "Batasi paparan langsung antara 10:00-14:00",
+                "Olahraga intensitas sedang di pagi/sore hari",
+                "Berjemur maksimal 15 menit untuk kulit sensitif",
+                "Waktu aman untuk gardening: sebelum 10:00 atau setelah 15:00",
+                "Anak-anak perlu diawasi lebih ketat",
+                "Jika bekerja di luar, ambil istirahat setiap 45 menit",
+                "Beraktivitas di area dengan naungan parsial"
+            ],
+            outfit: [
+                "Baju lengan pendek dengan lapisan sunscreen",
+                "Celana panjang tipis atau celana 3/4",
+                "Topi bertepi lebar atau topi panama",
+                "Kacamata hitam wrap-around untuk proteksi samping",
+                "Reapply sunscreen pada lengan dan kaki setiap 2 jam",
+                "Bahan: Katun dengan tenunan rapat, chambray, atau poplin",
+                "Warna: Biru muda, abu-abu terang, atau warna pastel dengan UV protection",
+                "Sepatu: Sepatu tertutup atau sandal dengan strap lebar",
+                "Aksesori: Scarf ringan untuk leher, wristbands"
+            ],
+            sunbath: {
+                safeDuration: "15-30 menit",
+                optimalDuration: "10-15 menit untuk vitamin D",
+                risk: "Sedang (burn time: 30-60 menit)",
+                bestTime: "Pagi (07:00-09:00) atau Sore (16:00-18:00)",
+                frequency: "2-3 kali per minggu",
+                position: "Bergantian sisi tubuh setiap 8 menit",
+                caution: "Hindari matahari pukul 11:00-13:00"
             }
-            return;
+        },
+        high: {
+            protection: [
+                "SPF 50+ wajib untuk semua area kulit terbuka",
+                "Pakaian lengan panjang dengan UPF minimal 30",
+                "Topi lebar dengan pinggiran 10cm+ dan neck flap",
+                "Kacamata hitam dengan polarisasi dan UV400+",
+                "Sunscreen broad spectrum (UVA/UVB) water resistant",
+                "Lip balm SPF 50+ dengan zinc oxide",
+                "Gunakan payung atau cari tempat teduh terus menerus",
+                "Reapply sunscreen setiap 90 menit atau lebih sering jika berenang"
+            ],
+            activities: [
+                "Hindari aktivitas outdoor antara 10:00-16:00",
+                "Olahraga hanya di pagi sebelum 09:00 atau sore setelah 17:00",
+                "Prioritaskan aktivitas indoor: gym, mall, museum",
+                "Jika harus keluar, maksimal 30 menit dengan perlindungan lengkap",
+                "Anak-anak sebaiknya bermain di dalam ruangan",
+                "Meeting outdoor sebaiknya di tempat teduh atau indoor",
+                "Minum air lebih banyak untuk hindari heat stroke"
+            ],
+            outfit: [
+                "Baju lengan panjang berbahan katun rapat atau linen",
+                "Celana panjang atau maxi dress/skirt",
+                "Topi bucket dengan neck guard atau topi safari",
+                "Kacamata hitam dengan frame besar dan side protection",
+                "Sunscreen SPF 50+ pada wajah, leher, tangan, dan kaki",
+                "Payung anti-UV atau cari naungan terus menerus",
+                "Bahan: Katun Oxford, denim ringan, atau kain dengan UPF rating",
+                "Warna: Navy, dark grey, olive, atau warna gelap dengan UV block",
+                "Sepatu: Sepatu tertutup dengan kaus kaki tipis",
+                "Aksesori: Arm sleeves, neck gaiter, atau lightweight scarf"
+            ],
+            sunbath: {
+                safeDuration: "10-15 menit",
+                optimalDuration: "5-10 menit (hanya untuk yang sangat perlu)",
+                risk: "Tinggi (burn time: 15-30 menit)",
+                bestTime: "Hanya pagi sebelum 08:30",
+                frequency: "Maksimal 1 kali per minggu",
+                position: "Punggung saja selama 5-8 menit maksimal",
+                caution: "Tidak disarankan untuk anak dan kulit sensitif"
+            }
+        },
+        veryHigh: {
+            protection: [
+                "SPF 50+ mineral sunscreen dengan zinc oxide/titanium dioxide",
+                "Pakaian UPF 50+ wajib untuk seluruh tubuh",
+                "Topi dengan neck veil atau attachment khusus",
+                "Kacamata hitam dengan goggle-style atau side shields",
+                "Sunscreen water resistant 80 menit, reapply setiap 60 menit",
+                "Lip balm dengan SPF 50+ dan physical blocker",
+                "Tetap di tempat teduh atau gunakan payung UV sepanjang waktu",
+                "Hindari keluar rumah jika tidak sangat penting"
+            ],
+            activities: [
+                "Hindari SEMUA aktivitas outdoor yang tidak perlu",
+                "Aktivitas hanya di dalam ruangan ber-AC",
+                "Jika emergency keluar, maksimal 15 menit dengan proteksi maksimal",
+                "Anak-anak, lansia, dan kulit sensitif TIDAK BOLEH keluar",
+                "Kerja remote dari dalam rumah jika memungkinkan",
+                "Tunda perjalanan, meeting, atau acara outdoor",
+                "Minum electrolyte untuk cegah dehidrasi ekstrem"
+            ],
+            outfit: [
+                "Full coverage clothing dengan rating UPF 50+",
+                "Long pants dengan bahan thick weave atau specialized fabric",
+                "Wide-brim hat dengan neck cover dan face shield",
+                "Sunglasses dengan full coverage dan UV filter max",
+                "Gloves untuk tangan atau arm sleeves UPF 50+",
+                "Sunscreen pada setiap inci kulit yang terbuka",
+                "UV umbrella dengan rating UPF 50+ wajib dibawa",
+                "Bahan: Specialized UV fabric, polyester tightly woven, nylon",
+                "Warna: Hitam, dark blue, atau warna dengan UV reflective coating",
+                "Sepatu: Sepatu tertutup dengan kaus kaki UPF",
+                "Aksesori: Face mask UV, leg gaiters, cooling towel"
+            ],
+            sunbath: {
+                safeDuration: "5-10 menit (hanya jika sangat diperlukan)",
+                optimalDuration: "TIDAK DISARANKAN",
+                risk: "Sangat Tinggi (burn time: 5-15 menit)",
+                bestTime: "Tidak ada waktu yang aman",
+                frequency: "Hindari sama sekali",
+                position: "Tidak disarankan",
+                caution: "Risiko sunburn ekstrem, skin damage permanen"
+            }
+        },
+        extreme: {
+            protection: [
+                "TETAP DI DALAM RUANGAN adalah perlindungan terbaik",
+                "Jika emergency keluar: SPF 100+ physical sunscreen",
+                "Full body coverage dengan pakaian UPF 100 jika ada",
+                "Face shield dengan UV protection + sunglasses",
+                "Sunscreen dengan zinc oxide 20%+ atau titanium dioxide",
+                "Lip protection dengan physical barrier",
+                "Hindari area reflective: air, pasir, salju, beton",
+                "Emergency exit only dengan durasi minimal"
+            ],
+            activities: [
+                "TIDAK ADA aktivitas outdoor yang aman",
+                "Semua aktivitas HARUS di dalam ruangan",
+                "Emergency services only dengan proteksi maksimal",
+                "Anak-anak, bayi, lansia, kulit sensitif: ABSOLUTELY NO OUTDOOR",
+                "Cancel semua janji, perjalanan, dan kegiatan luar",
+                "Stay hydrated dengan air dan electrolyte",
+                "Monitor tanda-tanda heat stroke dan sun poisoning"
+            ],
+            outfit: [
+                "Full body protective suit jika benar-benar harus keluar",
+                "Multi-layer clothing dengan bahan UV protective",
+                "Helmet dengan face shield UV atau specialized headgear",
+                "Goggles dengan UV protection maksimal",
+                "Gloves panjang dan thick socks",
+                "Sunscreen pada setiap millimeter kulit",
+                "UV umbrella dengan rating maksimal",
+                "Bahan: Multi-layer specialized fabrics, aluminized materials",
+                "Warna: Reflective silver, white, atau specialized UV coating",
+                "Sepatu: Boots tertutup dengan insulation",
+                "Aksesori: Cooling vest, hydration pack, emergency kit"
+            ],
+            sunbath: {
+                safeDuration: "TIDAK AMAN",
+                optimalDuration: "TIDAK DISARANKAN",
+                risk: "EKSTREM (burn time: <5 menit)",
+                bestTime: "Tidak ada waktu yang aman",
+                frequency: "JANGAN LAKUKAN",
+                position: "Tidak ada posisi aman",
+                caution: "Risiko immediate sunburn, heat stroke, skin cancer"
+            }
         }
-        
-        const rec = recommendations[uvLevel.key] || recommendations.moderate;
-        
+    };
+    
+    // Night time recommendations
+    if (!isDaytime || uvIndex === 0) {
         const container = document.getElementById('recommendationsContainer');
-        if (!container) return;
-        
-        const recommendationTypes = [
-            {
-                title: "🛡️ Perlindungan",
-                icon: "fa-shield-alt",
-                items: rec.protection || []
-            },
-            {
-                title: "🏃 Aktivitas",
-                icon: "fa-running",
-                items: rec.activities || []
-            },
-            {
-                title: "⏱️ Durasi Berjemur",
-                icon: "fa-sun",
-                items: [
-                    `Aman: ${rec.sunbath?.safeDuration || '-'}`,
-                    `Optimal: ${rec.sunbath?.optimalDuration || '-'}`,
-                    `Risiko: ${rec.sunbath?.risk || '-'}`
-                ]
-            }
-        ];
-        
-        let html = '';
-        
-        recommendationTypes.forEach(type => {
-            if (type.items && type.items.length > 0) {
-                html += `
-                    <div class="recommendation-card" data-level="${uvLevel.key}">
-                        <div class="recommendation-header">
-                            <div class="recommendation-icon">
-                                <i class="fas ${type.icon}"></i>
-                            </div>
-                            <div class="recommendation-title">${type.title}</div>
+        if (container) {
+            const nightRec = `
+                <div class="recommendation-card" data-level="night">
+                    <div class="recommendation-header">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-moon"></i>
                         </div>
-                        <ul class="recommendation-list">
-                            ${type.items.map(item => `
-                                <li><i class="fas fa-check-circle"></i> ${item}</li>
-                            `).join('')}
-                        </ul>
+                        <div class="recommendation-title">🌙 Malam Hari</div>
                     </div>
-                `;
-            }
-        });
-        
-        container.innerHTML = html || '<div class="loading-recommendations">Tidak ada rekomendasi</div>';
+                    <div class="recommendation-grid">
+                        <div class="recommendation-section">
+                            <h4><i class="fas fa-shield-alt"></i> Perlindungan</h4>
+                            <ul class="recommendation-list">
+                                <li><i class="fas fa-check-circle"></i> Tidak ada radiasi UV aktif</li>
+                                <li><i class="fas fa-check-circle"></i> Tidak perlu sunscreen UV protection</li>
+                                <li><i class="fas fa-check-circle"></i> Moisturizer untuk kulit kering malam</li>
+                                <li><i class="fas fa-check-circle"></i> Lip balm biasa (tanpa SPF) untuk kelembaban</li>
+                                <li><i class="fas fa-check-circle"></i> Eye care untuk mata lelah</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation-section">
+                            <h4><i class="fas fa-running"></i> Aktivitas</h4>
+                            <ul class="recommendation-list">
+                                <li><i class="fas fa-check-circle"></i> Aman untuk semua aktivitas outdoor</li>
+                                <li><i class="fas fa-check-circle"></i> Night running, cycling dengan safety gear</li>
+                                <li><i class="fas fa-check-circle"></i> Stargazing atau night photography</li>
+                                <li><i class="fas fa-check-circle"></i> Outdoor dining atau social gathering</li>
+                                <li><i class="fas fa-check-circle"></i> Anak-anak dapat bermain di luar dengan pengawasan</li>
+                                <li><i class="fas fa-check-circle"></i> Gardening dengan lampu kepala</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation-section">
+                            <h4><i class="fas fa-tshirt"></i> Pakaian & Outfit</h4>
+                            <ul class="recommendation-list">
+                                <li><i class="fas fa-check-circle"></i> Pakaian sesuai suhu malam (biasanya lebih dingin)</li>
+                                <li><i class="fas fa-check-circle"></i> Jaket atau sweater untuk kenyamanan</li>
+                                <li><i class="fas fa-check-circle"></i> Bahan: Wool, fleece, atau bahan hangat sesuai cuaca</li>
+                                <li><i class="fas fa-check-circle"></i> Warna: Terang atau reflective untuk visibility</li>
+                                <li><i class="fas fa-check-circle"></i> Sepatu: Closed shoes untuk proteksi</li>
+                                <li><i class="fas fa-check-circle"></i> Aksesori: Headlamp, reflective vest untuk safety</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation-section">
+                            <h4><i class="fas fa-info-circle"></i> Informasi Tambahan</h4>
+                            <ul class="recommendation-list">
+                                <li><i class="fas fa-check-circle"></i> UV Index: 0 (Aman total dari radiasi UV)</li>
+                                <li><i class="fas fa-check-circle"></i> Waktu: ${currentHour}:00 - Aman untuk kulit</li>
+                                <li><i class="fas fa-check-circle"></i> Suhu malam biasanya 5-10°C lebih dingin</li>
+                                <li><i class="fas fa-check-circle"></i> Kelembaban mungkin lebih tinggi</li>
+                                <li><i class="fas fa-check-circle"></i> Perhatikan keamanan pribadi di malam hari</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = nightRec;
+        }
+        return;
     }
+    
+    const rec = recommendations[uvLevel.key] || recommendations.moderate;
+    
+    const container = document.getElementById('recommendationsContainer');
+    if (!container) return;
+    
+    const recommendationTypes = [
+        {
+            title: "🛡️ Perlindungan Detail",
+            icon: "fa-shield-alt",
+            items: rec.protection || []
+        },
+        {
+            title: "🏃 Aktivitas & Jadwal",
+            icon: "fa-running",
+            items: rec.activities || []
+        },
+        {
+            title: "👕 Pakaian, Bahan & Warna",
+            icon: "fa-tshirt",
+            items: rec.outfit || []
+        },
+        {
+            title: "⏱️ Panduan Berjemur",
+            icon: "fa-sun",
+            items: [
+                `Durasi Aman: ${rec.sunbath?.safeDuration || '-'}`,
+                `Durasi Optimal Vitamin D: ${rec.sunbath?.optimalDuration || '-'}`,
+                `Risiko Sunburn: ${rec.sunbath?.risk || '-'}`,
+                `Waktu Terbaik: ${rec.sunbath?.bestTime || '-'}`,
+                `Frekuensi: ${rec.sunbath?.frequency || '-'}`,
+                `Posisi: ${rec.sunbath?.position || '-'}`,
+                `Peringatan: ${rec.sunbath?.caution || '-'}`
+            ]
+        }
+    ];
+    
+    let html = '';
+    
+    recommendationTypes.forEach(type => {
+        if (type.items && type.items.length > 0) {
+            html += `
+                <div class="recommendation-card" data-level="${uvLevel.key}">
+                    <div class="recommendation-header">
+                        <div class="recommendation-icon">
+                            <i class="fas ${type.icon}"></i>
+                        </div>
+                        <div class="recommendation-title">${type.title}</div>
+                    </div>
+                    <ul class="recommendation-list">
+                        ${type.items.map(item => `
+                            <li><i class="fas fa-check-circle"></i> ${item}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+    });
+    
+    container.innerHTML = html || '<div class="loading-recommendations">Tidak ada rekomendasi</div>';
+}
     
     updateActivityRecommendations() {
         if (!this.currentData) return;
