@@ -234,7 +234,7 @@ console.log("=".repeat(60));
     if (diff >= 1.0) {
         this.showNotification(
             `Kenaikan UV besar: +${diff.toFixed(1)} (Bahaya!)`,
-            "Bahaya"
+            "Danger"
         );
         // suara lebih tajam
         this.playTone(1200, 250, 0.25);
