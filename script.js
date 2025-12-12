@@ -4412,6 +4412,7 @@ getTimezoneColor(timezone) {
 }
 
     // ==================== RECOMMENDATIONS WITH OUTFIT ====================
+// ==================== RECOMMENDATIONS WITH OUTFIT ====================
 updateRecommendations() {
     if (!this.currentData) return;
     
@@ -4638,7 +4639,7 @@ updateRecommendations() {
                         <div class="recommendation-icon">
                             <i class="fas fa-moon"></i>
                         </div>
-                        <div class="recommendation-title">🌙 Malam Hari</div>
+                        <div class="recommendation-title">🌙 Malam Hari - Rekomendasi Lengkap</div>
                     </div>
                     <div class="recommendation-grid">
                         <div class="recommendation-section">
@@ -4727,7 +4728,9 @@ updateRecommendations() {
         }
     ];
     
-    let html = '';
+    let html = `
+        <div class="recommendations-grid-container">
+    `;
     
     recommendationTypes.forEach(type => {
         if (type.items && type.items.length > 0) {
@@ -4748,6 +4751,8 @@ updateRecommendations() {
             `;
         }
     });
+    
+    html += `</div>`;
     
     container.innerHTML = html || '<div class="loading-recommendations">Tidak ada rekomendasi</div>';
 }

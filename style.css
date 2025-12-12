@@ -3191,3 +3191,185 @@ tbody tr:hover td {
         grid-template-columns: 1fr;
     }
 }
+/* CSS untuk layout rekomendasi 4-kolom */
+.recommendations-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.recommendation-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.recommendation-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f3f5;
+}
+
+.recommendation-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.recommendation-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    flex: 1;
+}
+
+.recommendation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.recommendation-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #e9ecef;
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+.recommendation-list li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.recommendation-list li i.fa-check-circle {
+    color: #06D6A0;
+    font-size: 1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* Warna berdasarkan level UV */
+.recommendation-card[data-level="low"] .recommendation-icon {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+}
+
+.recommendation-card[data-level="moderate"] .recommendation-icon {
+    background: linear-gradient(135deg, #FFC107, #FFD54F);
+}
+
+.recommendation-card[data-level="high"] .recommendation-icon {
+    background: linear-gradient(135deg, #FF9800, #FFB74D);
+}
+
+.recommendation-card[data-level="veryHigh"] .recommendation-icon {
+    background: linear-gradient(135deg, #F44336, #EF5350);
+}
+
+.recommendation-card[data-level="extreme"] .recommendation-icon {
+    background: linear-gradient(135deg, #9C27B0, #AB47BC);
+}
+
+.recommendation-card[data-level="night"] .recommendation-icon {
+    background: linear-gradient(135deg, #4169E1, #5D7BDA);
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 1200px) {
+    .recommendations-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .recommendations-grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Untuk malam hari */
+.recommendation-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 15px;
+}
+
+@media (max-width: 1200px) {
+    .recommendation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .recommendation-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.recommendation-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 18px;
+    border-left: 4px solid #4169E1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.recommendation-section h4 {
+    margin-top: 0;
+    color: #4169E1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.recommendation-section .recommendation-list {
+    flex: 1;
+    margin: 0;
+    padding-left: 0;
+}
+
+.recommendation-section .recommendation-list li {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.recommendation-section .recommendation-list li i {
+    color: #06D6A0;
+    font-size: 0.9rem;
+    margin-top: 2px;
+}
