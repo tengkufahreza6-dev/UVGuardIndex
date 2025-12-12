@@ -5454,51 +5454,82 @@ updateRecommendations() {
     
     // ==================== NOTIFICATION SYSTEM ====================
     showNotification(message, type = 'info') {
-        console.log(`📢 ${type.toUpperCase()}: ${message}`);
-        
-        const container = document.getElementById('notificationSystem');
-        if (!container) {
-            console.warn("Notification container not found");
-            return;
-        }
-        
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
-            warning: 'fa-exclamation-triangle',
-            info: 'fa-info-circle'
-        };
-        
-        const icon = icons[type] || 'fa-info-circle';
-        
-        notification.innerHTML = `
-            <i class="fas ${icon}"></i>
-            <div class="notification-content">
-                <div class="notification-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
-                <div class="notification-message">${message}</div>
-            </div>
-            <button class="notification-close" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        
-        container.appendChild(notification);
-        
-        // Auto remove setelah 5 detik
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.classList.add('fade-out');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 300);
-            }
-        }, 5000);
+    console.log(`📢 ${type.toUpperCase()}: ${message}`);
+    
+    const container = document.getElementById('notificationSystem');
+    if (!container) {
+        console.warn("Notification container not found");
+        return;
     }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    // Mapping icon untuk semua type termasuk danger
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle',
+        danger: 'fa-exclamation-triangle',
+        Danger: 'fa-exclamation-triangle',
+        bahaya: 'fa-exclamation-triangle'
+    };
+    
+    // Jika type danger tidak ada di mapping, fallback ke error
+    const icon = icons[type] || 'fa-info-circle';
+    
+    // Mapping title/warna
+    const titles = {
+        success: 'Berhasil',
+        error: 'Error',
+        warning: 'Peringatan',
+        info: 'Informasi',
+        danger: 'Bahaya!',
+        Danger: 'Bahaya!',
+        bahaya: 'Bahaya!'
+    };
+    
+    const title = titles[type] || type.charAt(0).toUpperCase() + type.slice(1);
+    
+    notification.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <div class="notification-content">
+            <div class="notification-title">${title}</div>
+            <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    container.appendChild(notification);
+    
+    // ========== TAMBAHKAN LOGIKA DURASI BERBEDA ==========
+    let duration = 5000; // Default: 5 detik (info, success, error biasa)
+    
+    // Durasi khusus untuk notifikasi tertentu
+    if (type === 'danger' || type === 'Danger' || type === 'bahaya') {
+        duration = 15000; // 15 detik untuk Bahaya (3x lebih lama)
+    } else if (type === 'warning') {
+        duration = 10000; // 10 detik untuk Waspada (2x lebih lama)
+    }
+    
+    // Auto remove setelah durasi tertentu
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, duration);
+    
+    // Log durasi untuk debugging
+    console.log(`⏱️ Notifikasi "${type}" akan hilang dalam ${duration/1000} detik`);
+}
     
     // ==================== VALIDATION METHODS ====================
     validateCoordinates(lat, lon) {

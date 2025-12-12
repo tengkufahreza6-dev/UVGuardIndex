@@ -2742,7 +2742,39 @@ tbody tr:hover td {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+/* Tambahkan di CSS notification */
+.notification.Danger {
+    background: linear-gradient(135deg, #ff3300, #ff5500);
+    border-left: 5px solid #ff0000;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 51, 0, 0.3);
+}
 
+.notification.Danger i {
+    color: #ffcc00;
+    animation: pulse 1s infinite;
+}
+
+.notification.Danger .notification-title {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.notification.Bahaya {
+    background: linear-gradient(135deg, #ff0000, #ff3300);
+    border-left: 5px solid #cc0000;
+    color: white;
+}
+
+.notification.Bahaya i {
+    color: #ffff00;
+}
 .notification.success {
     border-left-color: var(--success);
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(0, 204, 136, 0.05));
