@@ -1,6 +1,7 @@
 // ==================== UV GUARD Index - COMPLETE VERSION (OPTIMIZED & REALISTIC) ====================//
 class UVGuardIndex {
     constructor() {
+        this.videoController = new VideoTutorialController();
         this.masterVolume = 3.0; // Atur 0.0 – 1.0 (0.7 keras, 1.0 sangat keras)
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.dataHistory = [];
@@ -253,8 +254,8 @@ console.log("=".repeat(60));
                 <div id="userGuideModal" class="modal">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h2><i class="fas fa-book"></i> UV Guard Pro - Panduan Pengguna</h2>
-                            <button class="close-btn" onclick="app.closeUserGuide()">&times;</button>
+                            <h2><i class="fas fa-book"></i> UV Guard Index - Panduan Pengguna</h2>
+                           
                         </div>
                         <div class="modal-body">
                             <div class="guide-tabs">
@@ -262,11 +263,12 @@ console.log("=".repeat(60));
                                 <button class="tab-btn" onclick="app.switchGuideTab('features')">✨ Fitur</button>
                                 <button class="tab-btn" onclick="app.switchGuideTab('api')">🌐 API</button>
                                 <button class="tab-btn" onclick="app.switchGuideTab('tips')">💡 Tips</button>
+                                <button class="tab-btn" onclick="app.switchGuideTab('video')">🎬 Video Tutorial</button>
                             </div>
                             
                             <div id="guideOverview" class="guide-tab active">
-                                <h3><i class="fas fa-sun"></i> Tentang UV Guard Pro</h3>
-                                <p>UV Guard Pro adalah aplikasi monitoring UV Index real-time yang membantu melindungi Anda dari bahaya radiasi ultraviolet.</p>
+                                <h3><i class="fas fa-sun"></i> Tentang UV Guard Index</h3>
+                                <p>UV Guard Index adalah aplikasi monitoring UV Index real-time yang membantu melindungi Anda dari bahaya radiasi ultraviolet.</p>
                                 
                                 <div class="guide-section">
                                     <h4><i class="fas fa-crosshairs"></i> Cara Kerja</h4>
@@ -442,7 +444,133 @@ console.log("=".repeat(60));
                         </div>
                     </div>
                 </div>
-            `;
+            
+                <div id="guideVideo" class="guide-tab">
+    <h3><i class="fas fa-video"></i> Video Tutorial Penggunaan</h3>
+    
+    <!-- VIDEO PLAYER READY -->
+    <div class="video-container">
+        <div class="video-player" id="videoPlayer">
+            <!-- Video element akan diinisialisasi oleh JavaScript -->
+            <div class="video-loading" id="videoLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Memuat video tutorial...</p>
+            </div>
+        </div>
+        
+        <!-- VIDEO CONTROLS -->
+        <div class="video-controls">
+            <button class="control-btn" onclick="app.videoPlayPause()" id="playPauseBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            
+            <div class="time-display">
+                <span id="currentTime">0:00</span> / 
+                <span id="durationTime">0:00</span>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" onclick="app.seekVideo(event)">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <button class="control-btn" onclick="app.toggleMute()" id="muteBtn">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            
+            <input type="range" min="0" max="100" value="100" 
+                   oninput="app.changeVolume(this.value)" id="volumeSlider">
+            
+            <button class="control-btn" onclick="app.toggleFullscreen()" id="fullscreenBtn">
+                <i class="fas fa-expand"></i>
+            </button>
+            
+            <button class="control-btn" onclick="app.downloadVideo()">
+                <i class="fas fa-download"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- VIDEO CHAPTERS -->
+    <div class="video-chapters">
+        <h4><i class="fas fa-list-ol"></i> Chapters:</h4>
+        <div class="chapters-grid">
+            <button class="chapter-btn" onclick="app.seekToTime(0)">
+                <div class="chapter-icon">▶️</div>
+                <div class="chapter-content">
+                    <strong>00:00</strong>
+                    <small>Pengenalan UV Guard Pro</small>
+                </div>
+            </button>
+            
+            <button class="chapter-btn" onclick="app.seekToTime(90)">
+                <div class="chapter-icon">📍</div>
+                <div class="chapter-content">
+                    <strong>01:30</strong>
+                    <small>Deteksi Lokasi Otomatis</small>
+                </div>
+            </button>
+            
+            <button class="chapter-btn" onclick="app.seekToTime(195)">
+                <div class="chapter-icon">🧮</div>
+                <div class="chapter-content">
+                    <strong>03:15</strong>
+                    <small>Kalkulator Berjemur</small>
+                </div>
+            </button>
+            
+            <button class="chapter-btn" onclick="app.seekToTime(345)">
+                <div class="chapter-icon">📊</div>
+                <div class="chapter-content">
+                    <strong>05:45</strong>
+                    <small>Analisis Matematis</small>
+                </div>
+            </button>
+            
+            <button class="chapter-btn" onclick="app.seekToTime(500)">
+                <div class="chapter-icon">💡</div>
+                <div class="chapter-content">
+                    <strong>08:20</strong>
+                    <small>Tips & Best Practices</small>
+                </div>
+            </button>
+        </div>
+    </div>
+    
+    <!-- VIDEO INFO -->
+    <div class="video-info-card">
+        <div class="info-item">
+            <i class="fas fa-clock"></i>
+            <div>
+                <strong>Durasi:</strong>
+                <span id="videoDuration">10:30 menit</span>
+            </div>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-video"></i>
+            <div>
+                <strong>Format:</strong>
+                <span>MP4 HD (1080p)</span>
+            </div>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-file-download"></i>
+            <div>
+                <strong>Ukuran:</strong>
+                <span id="videoSize">~85 MB</span>
+            </div>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-language"></i>
+            <div>
+                <strong>Bahasa:</strong>
+                <span>Indonesia</span>
+            </div>
+        </div>
+    </div>
+</div>
+`;
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
@@ -523,7 +651,250 @@ hardResetAllTimers() {
         const styleId = 'user-guide-styles';
         if (document.getElementById(styleId)) return;
         
+        const videoStyles = `
+    /* Video Container */
+    .video-container {
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 20px 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .video-player {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+    }
+    
+    .video-player video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        outline: none;
+    }
+    
+    .video-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+    
+    .video-loading i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: #0066cc;
+    }
+    
+    /* Video Controls */
+    .video-controls {
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .control-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .control-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+    }
+    
+    .time-display {
+        color: white;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.9rem;
+        min-width: 100px;
+    }
+    
+    .progress-container {
+        flex: 1;
+    }
+    
+    .progress-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: #0066cc;
+        border-radius: 3px;
+        width: 0%;
+        transition: width 0.1s;
+    }
+    
+    input[type="range"] {
+        width: 80px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #0066cc;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    
+    /* Video Chapters */
+    .video-chapters {
+        margin: 25px 0;
+    }
+    
+    .chapters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .chapter-btn {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .chapter-btn:hover {
+        background: #e9ecef;
+        border-color: #0066cc;
+        transform: translateY(-3px);
+    }
+    
+    .chapter-icon {
+        font-size: 1.5rem;
+    }
+    
+    .chapter-content {
+        flex: 1;
+    }
+    
+    .chapter-content strong {
+        display: block;
+        color: #0066cc;
+        font-size: 1.1rem;
+    }
+    
+    .chapter-content small {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* Video Info Card */
+    .video-info-card {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 25px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .info-item i {
+        font-size: 1.5rem;
+        color: #0066cc;
+        width: 40px;
+        text-align: center;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .video-controls {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .chapters-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .video-info-card {
+            grid-template-columns: 1fr;
+        }
+    }
+`;
+// Tambahkan ke addUserGuideStyles():
+const errorStyles = `
+    .video-error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 400px;
+        width: 90%;
+    }
+    
+    .video-error i {
+        font-size: 3rem;
+        color: #ff6b6b;
+        margin-bottom: 15px;
+    }
+    
+    .video-error h3 {
+        margin: 10px 0;
+        color: #ff6b6b;
+    }
+    
+    .video-error p {
+        margin: 10px 0;
+        color: #ccc;
+    }
+    
+    .video-error code {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Roboto Mono', monospace;
+    }
+`;
         const styles = `
+        styles += videoStyles;
             /* User Guide Modal */
             .modal {
                 display: none;
@@ -833,46 +1204,182 @@ hardResetAllTimers() {
     }
     
     openUserGuide() {
-        const modal = document.getElementById('userGuideModal');
-        if (modal) {
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
+    console.log("🚨 EMERGENCY FIX: Opening user guide");
+    
+    const modal = document.getElementById('userGuideModal');
+    if (!modal) {
+        console.error("Modal not found, creating emergency modal");
+        this.createEmergencyModal();
+        return;
     }
     
-    closeUserGuide() {
-        const modal = document.getElementById('userGuideModal');
-        if (modal) {
+    // HARD FIX: Reset semua style
+    modal.style.cssText = `
+        display: block !important;
+        position: fixed !important;
+        z-index: 9999 !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-color: rgba(0,0,0,0.8) !important;
+        overflow: auto !important;
+    `;
+    
+    // Pastikan modal content juga visible
+    const modalContent = modal.querySelector('.modal-content');
+    if (modalContent) {
+        modalContent.style.cssText = `
+            background-color: white !important;
+            margin: 5% auto !important;
+            padding: 0 !important;
+            border: 1px solid #888 !important;
+            width: 90% !important;
+            max-width: 1000px !important;
+            border-radius: 10px !important;
+            position: relative !important;
+            z-index: 10000 !important;
+        `;
+    }
+    
+    document.body.style.overflow = 'hidden';
+    
+    // Tambah close button emergency
+    this.addEmergencyCloseButton();
+    
+    console.log("✅ Emergency modal opened");
+}
+
+createEmergencyModal() {
+    const emergencyHTML = `
+        <div id="emergencyModal" style="
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: block;
+            overflow: auto;
+        ">
+            <div style="
+                background: white;
+                margin: 50px auto;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 800px;
+                position: relative;
+            ">
+                <button onclick="document.getElementById('emergencyModal').remove(); document.body.style.overflow='auto'" 
+                        style="
+                            position: absolute;
+                            top: 15px;
+                            right: 15px;
+                            background: #ff3300;
+                            color: white;
+                            border: none;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            font-size: 20px;
+                            cursor: pointer;
+                        ">
+                    ×
+                </button>
+                <h2>🆘 Emergency User Guide</h2>
+                <p>Modal utama mengalami masalah. Ini adalah fallback.</p>
+                <p>Tab yang tersedia:</p>
+                <div style="margin: 20px 0;">
+                    <button onclick="app.switchGuideTab('overview')" style="padding: 10px 20px; margin: 5px;">📋 Overview</button>
+                    <button onclick="app.switchGuideTab('features')" style="padding: 10px 20px; margin: 5px;">✨ Fitur</button>
+                    <button onclick="app.switchGuideTab('api')" style="padding: 10px 20px; margin: 5px;">🌐 API</button>
+                    <button onclick="app.switchGuideTab('tips')" style="padding: 10px 20px; margin: 5px;">💡 Tips</button>
+                    <button onclick="app.switchGuideTab('video')" style="padding: 10px 20px; margin: 5px;">🎬 Video</button>
+                </div>
+                <div id="emergencyTabContent"></div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', emergencyHTML);
+}
+
+addEmergencyCloseButton() {
+    const modal = document.getElementById('userGuideModal');
+    if (!modal) return;
+    
+    // Cek apakah sudah ada close button
+    let closeBtn = modal.querySelector('.emergency-close');
+    if (!closeBtn) {
+        closeBtn = document.createElement('button');
+        closeBtn.className = 'emergency-close';
+        closeBtn.innerHTML = '×';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff3300;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10001;
+        `;
+        closeBtn.onclick = () => {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
-        }
+        };
+        
+        modal.appendChild(closeBtn);
     }
+}
     
     switchGuideTab(tabName) {
-        // Hide all tabs
-        document.querySelectorAll('.guide-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Remove active class from all buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Show selected tab
-        const tab = document.getElementById(`guide${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
-        if (tab) {
-            tab.classList.add('active');
-        }
-        
-        // Activate selected button
-        const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(btn => {
-            if (btn.textContent.includes(tabName.charAt(0).toUpperCase() + tabName.slice(1))) {
-                btn.classList.add('active');
-            }
-        });
+    console.log(`📚 Switching to tab: ${tabName}`);
+    
+    // Hide all tabs
+    document.querySelectorAll('.guide-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    const tab = document.getElementById(`guide${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+    if (tab) {
+        tab.classList.add('active');
     }
+    
+    // Fixed logic for button activation
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => {
+        const btnText = btn.textContent.toLowerCase();
+        
+        // Simple keyword matching
+        const shouldActivate = 
+    (tabName === 'overview' && (btnText.includes('overview') || btnText.includes('📋'))) ||
+    (tabName === 'features' && (btnText.includes('fitur') || btnText.includes('✨'))) ||
+    (tabName === 'api' && (btnText.includes('api') || btnText.includes('🌐'))) ||
+    (tabName === 'tips' && (btnText.includes('tips') || btnText.includes('💡'))) ||
+    (tabName === 'video' && (btnText.includes('video') || btnText.includes('🎬')));
+        if (shouldActivate) {
+            btn.classList.add('active');
+        }
+    });
+     // Initialize video player when video tab is opened
+        if (tabName === 'video') {
+            setTimeout(() => {
+                this.videoController.initVideoPlayer();
+            }, 300);
+        }
+}
     
     printUserGuide() {
         const modalContent = document.querySelector('#userGuideModal .modal-content');
@@ -1019,7 +1526,7 @@ showStartupPlaceholder() {
     const fetchBtn = document.getElementById('fetchData');
     if (fetchBtn) {
         fetchBtn.disabled = false;
-        fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang';
+        fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data ';
         fetchBtn.style.opacity = '1';
     }
     
@@ -1161,7 +1668,7 @@ clearAllInputsOnStartup() {
     const fetchBtn = document.getElementById('fetchData');
     if (fetchBtn) {
         fetchBtn.disabled = false;
-        fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang';
+        fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data ';
         fetchBtn.style.opacity = '1';
     }
     
@@ -1234,6 +1741,12 @@ updateUIWithPlaceholder() {
         
         // Initialize skin type selector
         this.initSkinTypeSelector();
+
+        // Initialize scroll navigation
+    setTimeout(() => {
+        this.setupScrollNavigation();
+         this.setupSmoothScroll();
+    }, 1500);
         
         // Initialize charts
         setTimeout(() => {
@@ -2200,100 +2713,112 @@ getFallbackTimezone(failedTimezone) {
 }
     
     // ==================== CHART SYSTEM ====================
-    initCharts() {
-        console.log("📊 Initializing charts...");
-        
-        // UV Chart
-        const uvCtx = document.getElementById('uvChart');
-        if (!uvCtx) {
-            console.error("❌ UV chart canvas not found!");
-            return;
-        }
-        
-        // Destroy previous chart if exists
-        if (this.charts.uv) {
-            try {
-                this.charts.uv.destroy();
-            } catch (e) {
-                console.warn("Error destroying old chart:", e);
-            }
-        }
-        
+initCharts() {
+    console.log("📊 Initializing charts...");
+    
+    // UV Chart
+    const uvCtx = document.getElementById('uvChart');
+    if (!uvCtx) {
+        console.error("❌ UV chart canvas not found!");
+        return;
+    }
+    
+    // Destroy previous chart if exists
+    if (this.charts.uv) {
         try {
-            this.charts.uv = new Chart(uvCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'UV Index',
-                        data: [],
-                        borderColor: '#0066cc',
-                        backgroundColor: 'rgba(0, 102, 204, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#0066cc',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#ffffff',
-                            bodyColor: '#ffffff',
-                            callbacks: {
-                                label: (context) => `UV Index: ${context.parsed.y.toFixed(1)}`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'category',
-                            title: {
-                                display: true,
-                                text: 'Waktu',
-                                color: '#64748b'
-                            },
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'UV Index',
-                                color: '#64748b'
-                            },
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            suggestedMax: 15
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            });
-            console.log("✅ UV Chart initialized");
-            
-            // Update chart with existing data
-            if (this.dataHistory.length > 0) {
-                setTimeout(() => {
-                    this.updateCharts();
-                }, 100);
-            }
-            
-        } catch (error) {
-            console.error("❌ Error initializing UV chart:", error);
+            this.charts.uv.destroy();
+        } catch (e) {
+            console.warn("Error destroying old chart:", e);
         }
     }
+    
+    try {
+        this.charts.uv = new Chart(uvCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'UV Index',
+                    data: [],
+                    borderColor: '#0066cc',
+                    backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0066cc',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        callbacks: {
+                            label: (context) => `UV Index: ${context.parsed.y.toFixed(2)}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'category',
+                        title: {
+                            display: true,
+                            text: 'Waktu',
+                            color: '#64748b'
+                        },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'UV Index',
+                            color: '#64748b'
+                        },
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        suggestedMin: 0, // TAMBAHKAN INI
+                        suggestedMax: 8, // KURANGI DARI 15 KE 8 (atau lebih rendah)
+                        ticks: {
+                            callback: function(value) {
+                                // Tampilkan dengan 2 desimal untuk nilai kecil
+                                if (value < 1) {
+                                    return value.toFixed(2);
+                                } else if (value < 10) {
+                                    return value.toFixed(1);
+                                }
+                                return value;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+        console.log("✅ UV Chart initialized");
+        
+        // Update chart with existing data
+        if (this.dataHistory.length > 0) {
+            setTimeout(() => {
+                this.updateCharts();
+            }, 100);
+        }
+        
+    } catch (error) {
+        console.error("❌ Error initializing UV chart:", error);
+    }
+}
     
     // ========== NEW METHOD: Update Time Period dengan Timezone Tertentu ==========
 updateTimePeriodWithTimezone(timezone) {
@@ -2361,6 +2886,313 @@ updateTimePeriodWithTimezone(timezone) {
     }
 }
 
+    // ==================== ADVANCED SCROLL NAVIGATION ====================
+// ==================== SIMPLE SCROLL NAVIGATION (NO DROPDOWN) ====================
+setupScrollNavigation() {
+    console.log("🔍 Setting up simple scroll navigation (no dropdown)...");
+    
+    setTimeout(() => {
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        // Mapping: Section yang dilihat → Navigation yang di-highlight
+        const sectionToNavMap = {
+            'dashboard': '#dashboard',
+            'data-input': '#data-input',    // Koneksi Data → Analisis
+            'analisis': '#data-input',      // Analisis Matematis → Analisis
+            'dampak': '#dampak',
+            'berjemur': '#berjemur',
+            'sun-effects': '#berjemur',     // Manfaat & Risiko → Berjemur
+            'rekomendasi': '#rekomendasi',
+            'edukasi': '#edukasi'
+        };
+        
+        // Function to update active nav
+        const updateActiveNav = () => {
+            const sections = document.querySelectorAll('section[id]');
+            let activeSectionId = '';
+            
+            // Find which section is most visible
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const isVisible = (
+                    rect.top <= window.innerHeight * 0.5 &&
+                    rect.bottom >= window.innerHeight * 0.3
+                );
+                
+                if (isVisible) {
+                    activeSectionId = section.id;
+                }
+            });
+            
+            // If no section found, check for specific positions
+            if (!activeSectionId) {
+                const scrollPos = window.scrollY + 100;
+                
+                // Manual check for sections
+                const sectionsData = [
+                    { id: 'dashboard', element: document.getElementById('dashboard') },
+                    { id: 'data-input', element: document.getElementById('data-input') },
+                    { id: 'analisis', element: document.getElementById('analisis') },
+                    { id: 'dampak', element: document.getElementById('dampak') },
+                    { id: 'berjemur', element: document.getElementById('berjemur') },
+                    { id: 'sun-effects', element: document.getElementById('sun-effects') },
+                    { id: 'rekomendasi', element: document.getElementById('rekomendasi') },
+                    { id: 'edukasi', element: document.getElementById('edukasi') }
+                ];
+                
+                sectionsData.forEach(({ id, element }) => {
+                    if (element) {
+                        const elementTop = element.offsetTop;
+                        const elementBottom = elementTop + element.offsetHeight;
+                        
+                        if (scrollPos >= elementTop && scrollPos < elementBottom) {
+                            activeSectionId = id;
+                        }
+                    }
+                });
+            }
+            
+            // Update nav links
+            if (activeSectionId) {
+                const targetNavId = sectionToNavMap[activeSectionId];
+                
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    
+                    if (href === targetNavId) {
+                        // Active link
+                        link.classList.add('active');
+                        link.style.color = '#0066cc';
+                        link.style.fontWeight = 'bold';
+                        link.style.background = 'rgba(0, 102, 204, 0.1)';
+                        link.style.borderRadius = '4px';
+                        link.style.padding = '8px 16px';
+                    } else {
+                        // Inactive link
+                        link.classList.remove('active');
+                        link.style.color = '';
+                        link.style.fontWeight = '';
+                        link.style.background = '';
+                        link.style.padding = '8px 16px';
+                    }
+                });
+                
+                console.log(`📍 Active: ${activeSectionId} → Nav: ${targetNavId}`);
+            }
+        };
+        
+        // Set up event listeners
+        window.addEventListener('scroll', updateActiveNav);
+        window.addEventListener('resize', updateActiveNav);
+        
+        // Initial update
+        setTimeout(updateActiveNav, 100);
+        
+        console.log('✅ Simple navigation setup complete');
+    }, 1000);
+}
+
+// Setup Intersection Observer
+setupIntersectionObserver(navLinks) {
+    const sections = document.querySelectorAll('section[id]');
+    
+    // Create observer
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    this.updateNavLinks(sectionId, navLinks);
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: '-20% 0px -20% 0px',
+            threshold: 0.1
+        }
+    );
+    
+    // Observe all sections
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+}
+
+// Update nav links based on active section
+updateNavLinks(activeSectionId, navLinks) {
+    const sectionMap = {
+        'data-input': 'analisis',
+        'sun-effects': 'berjemur'
+    };
+    
+    // Get the nav section (mapped if needed)
+    const navSectionId = sectionMap[activeSectionId] || activeSectionId;
+    
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href || !href.startsWith('#')) return;
+        
+        const targetId = href.substring(1);
+        
+        // Check if this link should be active
+        const shouldBeActive = 
+            targetId === navSectionId ||
+            targetId === activeSectionId ||
+            (sectionMap[targetId] === activeSectionId);
+        
+        if (shouldBeActive) {
+            link.classList.add('active');
+            link.style.color = '#0066cc';
+            link.style.fontWeight = 'bold';
+        } else {
+            link.classList.remove('active');
+            link.style.color = '';
+            link.style.fontWeight = '';
+        }
+    });
+}
+
+    // Smooth scroll for nav links
+setupSmoothScroll() {
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            const href = link.getAttribute('href');
+            if (!href.startsWith('#')) return;
+            
+            const targetId = href.substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                // Update active nav immediately
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                    nav.style.color = '';
+                    nav.style.fontWeight = '';
+                    nav.style.background = '';
+                });
+                
+                link.classList.add('active');
+                link.style.color = '#ffffff';
+                link.style.fontWeight = 'bold';
+                link.style.background = 'linear-gradient(135deg, #0066cc, #0099ff)';
+                
+                // Smooth scroll
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+
+// Helper to get parent section ID
+getParentSectionId(subSectionId) {
+    const parentMap = {
+        'data-input': 'analisis',
+        'sun-effects': 'berjemur'
+    };
+    return parentMap[subSectionId] || subSectionId;
+}
+
+// Backup scroll detection
+setupScrollBackup(navLinks, sectionDetectionPoints) {
+    window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY + 100;
+        const viewportHeight = window.innerHeight;
+        
+        // Check setiap section
+        sectionDetectionPoints.forEach(section => {
+            let isSectionActive = false;
+            
+            // Check semua selector untuk section ini
+            section.selectors.forEach(selector => {
+                if (isSectionActive) return; // Skip jika sudah ditemukan
+                
+                try {
+                    let elements;
+                    
+                    if (selector.includes(':contains(')) {
+                        // Handle text content matching
+                        const text = selector.match(/:contains\("([^"]+)"\)/)[1];
+                        elements = Array.from(document.querySelectorAll('h2, h3, h4')).filter(el => 
+                            el.textContent.includes(text)
+                        );
+                    } else {
+                        elements = document.querySelectorAll(selector);
+                    }
+                    
+                    elements.forEach(element => {
+                        const rect = element.getBoundingClientRect();
+                        const elementTop = window.scrollY + rect.top;
+                        const elementBottom = elementTop + rect.height;
+                        
+                        // Jika elemen berada dalam viewport (dengan threshold)
+                        if (scrollPosition >= elementTop - 100 && 
+                            scrollPosition <= elementBottom - 100) {
+                            isSectionActive = true;
+                        }
+                    });
+                } catch (e) {
+                    // Skip selector yang error
+                }
+            });
+            
+            // Update nav link untuk section ini
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (!href || !href.startsWith('#')) return;
+                
+                const targetId = href.substring(1);
+                
+                if (targetId === section.id && isSectionActive) {
+                    link.classList.add('active');
+                    link.style.color = '#0066cc';
+                    link.style.fontWeight = 'bold';
+                    link.style.background = 'rgba(0, 102, 204, 0.1)';
+                } else if (targetId === section.id) {
+                    link.classList.remove('active');
+                    link.style.color = '';
+                    link.style.fontWeight = '';
+                    link.style.background = '';
+                }
+            });
+        });
+    });
+}
+// Method untuk update link aktif
+updateActiveNavLink(sectionId) {
+    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        
+        // Hapus # dari href untuk matching
+        const linkHref = link.getAttribute('href');
+        const linkTarget = linkHref.substring(1); // hapus karakter '#'
+        
+        if (linkTarget === sectionId) {
+            link.classList.add('active');
+            
+            // Tambahkan visual feedback
+            link.style.color = '#0066cc';
+            link.style.fontWeight = 'bold';
+            link.style.background = 'rgba(0, 102, 204, 0.1)';
+            link.style.borderRadius = '4px';
+            link.style.padding = '5px 10px';
+            
+            console.log(`📍 Active section: ${sectionId}`);
+        } else {
+            link.style.color = '';
+            link.style.fontWeight = '';
+            link.style.background = '';
+            link.style.padding = '';
+        }
+    });
+}
 
     // ==================== EVENT LISTENERS ====================
     initEventListeners() {
@@ -4380,7 +5212,7 @@ if (timezoneElement) {
         }
     }
 }
-    
+
     // ==================== SIMPLE TIMEZONE FORMATTER ====================
 formatTimezoneForDisplay(timezone) {
     const tz = timezone || this.timezone || 'Asia/Jakarta';
@@ -5039,69 +5871,112 @@ updateRecommendations() {
     
     // ==================== CHART METHODS ====================
     updateCharts() {
-        console.log("📈 Updating charts...");
-        
-        const chartContainer = document.querySelector('.chart-container');
-        if (!chartContainer) {
-            console.error("Chart container not found!");
+    console.log("📈 Updating charts...");
+    
+    const chartContainer = document.querySelector('.chart-container');
+    if (!chartContainer) {
+        console.error("Chart container not found!");
+        return;
+    }
+    
+    if (!this.charts.uv) {
+        const uvCtx = document.getElementById('uvChart');
+        if (!uvCtx) {
+            console.error("Chart canvas not found!");
             return;
         }
         
+        this.initCharts();
         if (!this.charts.uv) {
-            const uvCtx = document.getElementById('uvChart');
-            if (!uvCtx) {
-                console.error("Chart canvas not found!");
-                return;
-            }
-            
-            this.initCharts();
-            if (!this.charts.uv) {
-                console.error("Failed to initialize chart!");
-                return;
-            }
-        }
-        
-        if (!this.dataHistory || this.dataHistory.length < 1) {
-            this.charts.uv.data.labels = ['00:00', '06:00', '12:00', '18:00'];
-            this.charts.uv.data.datasets[0].data = [0, 5, 10, 5];
-            this.charts.uv.update();
+            console.error("Failed to initialize chart!");
             return;
-        }
-        
-        try {
-            const recentData = this.dataHistory.slice(-12);
-            const labels = recentData.map((point, index) => {
-                try {
-                    const time = new Date(point.timestamp);
-                    return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
-                } catch (e) {
-                    return `${index * 2}:00`;
-                }
-            });
-            
-            const data = recentData.map(point => point.uvIndex);
-            
-            console.log(`📊 Chart data: ${data.length} points, latest UV: ${data[data.length-1]}`);
-            
-            this.charts.uv.data.labels = labels;
-            this.charts.uv.data.datasets[0].data = data;
-            
-            if (data.length > 0) {
-                const maxUV = Math.max(...data.filter(d => !isNaN(d)));
-                if (maxUV > 0) {
-                    this.charts.uv.options.scales.y.suggestedMax = Math.max(15, maxUV * 1.3);
-                }
-            }
-            
-            this.charts.uv.update('active');
-            console.log("✅ Chart updated successfully");
-            
-            this.updateHistoryTable();
-            
-        } catch (error) {
-            console.error("❌ Error updating charts:", error);
         }
     }
+    
+    if (!this.dataHistory || this.dataHistory.length < 1) {
+        this.charts.uv.data.labels = ['00:00', '06:00', '12:00', '18:00'];
+        this.charts.uv.data.datasets[0].data = [0, 5, 10, 5];
+        this.charts.uv.update();
+        return;
+    }
+    
+    try {
+        const recentData = this.dataHistory.slice(-12);
+        const labels = recentData.map((point, index) => {
+            try {
+                const time = new Date(point.timestamp);
+                return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+            } catch (e) {
+                return `${index * 2}:00`;
+            }
+        });
+        
+        const data = recentData.map(point => point.uvIndex);
+        
+        console.log(`📊 Chart data: ${data.length} points, latest UV: ${data[data.length-1]}`);
+        
+        // ========== PERBAIKAN UTAMA DI SINI ==========
+        // Hitung range data yang lebih sensitif
+        const minUV = Math.min(...data);
+        const maxUV = Math.max(...data);
+        const rangeUV = maxUV - minUV;
+        
+        // Jika perubahan kecil (kurang dari 1), set range yang lebih sensitif
+        let suggestedMax;
+        if (rangeUV < 1) {
+            // Untuk perubahan kecil, beri margin 0.2 di atas nilai maksimum
+            suggestedMax = maxUV + 0.2;
+        } else if (rangeUV < 3) {
+            // Untuk perubahan sedang
+            suggestedMax = maxUV + (rangeUV * 0.3);
+        } else {
+            // Untuk perubahan besar
+            suggestedMax = Math.max(8, maxUV * 1.3);
+        }
+        
+        // Pastikan suggestedMax minimal 1 jika ada data > 0
+        if (maxUV > 0 && suggestedMax < 1) {
+            suggestedMax = 1;
+        }
+        
+        // Set min ke 0 atau sedikit di bawah min jika data tidak di 0
+        const suggestedMin = minUV > 0 ? Math.max(0, minUV - 0.1) : 0;
+        
+        console.log(`📈 UV Range: ${minUV.toFixed(2)} - ${maxUV.toFixed(2)} (range: ${rangeUV.toFixed(2)})`);
+        console.log(`📈 Chart scale: ${suggestedMin.toFixed(2)} to ${suggestedMax.toFixed(2)}`);
+        
+        // Update skala chart
+        if (this.charts.uv.options.scales.y) {
+            this.charts.uv.options.scales.y.suggestedMin = suggestedMin;
+            this.charts.uv.options.scales.y.suggestedMax = suggestedMax;
+            
+            // Update ticks untuk tampilan yang lebih detail
+            this.charts.uv.options.scales.y.ticks = {
+                callback: function(value) {
+                    if (suggestedMax - suggestedMin < 2) {
+                        // Jika skala kecil, tampilkan dengan 2 desimal
+                        return value.toFixed(2);
+                    } else if (suggestedMax - suggestedMin < 5) {
+                        // Jika skala sedang, tampilkan dengan 1 desimal
+                        return value.toFixed(1);
+                    }
+                    return value;
+                }
+            };
+        }
+        
+        this.charts.uv.data.labels = labels;
+        this.charts.uv.data.datasets[0].data = data;
+        
+        this.charts.uv.update('active');
+        console.log("✅ Chart updated successfully");
+        
+        this.updateHistoryTable();
+        
+    } catch (error) {
+        console.error("❌ Error updating charts:", error);
+    }
+}
     
     updateChartRange(hours) {
         if (!this.charts.uv || !this.dataHistory.length) return;
@@ -5128,6 +6003,18 @@ updateRecommendations() {
         }
     }
     
+    interpretRate(rateValue) {
+    if (rateValue === '-' || isNaN(rateValue)) return {text: '-', color: '#777'};
+
+    const r = parseFloat(rateValue);
+    if (r >= 1.0) return {text: `Naik cepat +${r.toFixed(2)}/jam (Bahaya)`, color: '#d9534f'};
+    if (r >= 0.5) return {text: `Naik +${r.toFixed(2)}/jam (Waspada)`, color: '#f0ad4e'};
+    if (r >= 0.1) return {text: `Naik perlahan +${r.toFixed(2)}/jam`, color: '#5bc0de'};
+    if (r <= -1.0) return {text: `Turun cepat ${r.toFixed(2)}/jam`, color: '#0275d8'};
+    if (r <= -0.5) return {text: `Turun ${r.toFixed(2)}/jam`, color: '#5cb85c'};
+    return {text: `${r.toFixed(2)}/jam (Stabil)`, color: '#777'};
+}
+
     updateHistoryTable() {
         const tbody = document.getElementById('historyBody');
         if (!tbody) {
@@ -5175,7 +6062,9 @@ updateRecommendations() {
                 <tr>
                     <td>${time}</td>
                     <td><strong>${data.uvIndex.toFixed(1)}</strong></td>
-                    <td>${rate}</td>
+                    <td style="color:${this.interpretRate(parseFloat(rate))?.color}">
+                    ${this.interpretRate(parseFloat(rate))?.text}
+                    </td>
                     <td>${data.temperature ? data.temperature.toFixed(1) + '°C' : '-'}</td>
                     <td>${data.humidity || '-'}%</td>
                     <td>
@@ -5238,7 +6127,7 @@ updateRecommendations() {
             if (!enable) {
                 fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
             } else {
-                fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang';
+                fetchBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Ambil Data ';
             }
         }
     }
@@ -5379,6 +6268,60 @@ updateRecommendations() {
         }
     }
     
+    initExportButtons() {
+    const btn = document.getElementById('exportDataBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+        if (!this.dataHistory || this.dataHistory.length === 0) {
+            this.showNotification('Tidak ada data untuk diekspor', 'warning');
+            return;
+        }
+
+        // Pilihan format sederhana via prompt (bisa diganti dialog UI)
+        const format = prompt('Pilih format ekspor: ketik csv atau json', 'csv');
+        if (!format) return;
+
+        if (format.toLowerCase() === 'json') {
+            const blob = new Blob([JSON.stringify(this.dataHistory, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `uvguard_history_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            this.showNotification('Ekspor JSON berhasil', 'success');
+            return;
+        }
+
+        // CSV export
+        const keys = ['timestamp','uvIndex','temperature','humidity','lat','lon','source'];
+        const rows = this.dataHistory.map(d => {
+            return keys.map(k => {
+                let v = d[k];
+                if (k === 'timestamp') v = new Date(d.timestamp).toISOString();
+                if (v === undefined || v === null) return '';
+                // escape quotes
+                return (`"${String(v).replace(/"/g,'""')}"`);
+            }).join(',');
+        });
+        const header = keys.join(',');
+        const csv = header + '\n' + rows.join('\n');
+        const csvBlob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        const csvUrl = URL.createObjectURL(csvBlob);
+        const ai = document.createElement('a');
+        ai.href = csvUrl;
+        ai.download = `uvguard_history_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(ai);
+        ai.click();
+        ai.remove();
+        URL.revokeObjectURL(csvUrl);
+        this.showNotification('Ekspor CSV berhasil', 'success');
+    });
+}
+
     exportData() {
         if (this.dataHistory.length === 0) {
             this.showNotification("Tidak ada data untuk diekspor", "warning");
@@ -5852,6 +6795,282 @@ debugTimezoneInfo() {
 }
 }
 
+    // ==================== VIDEO TUTORIAL CONTROLLER ====================
+class VideoTutorialController {
+    constructor() {
+        this.video = null;
+        this.isPlaying = false;
+        this.isMuted = false;
+        this.currentVolume = 1.0;
+        this.videoUrl = 'uv-guide-tutorial.mp4'; // Nanti ganti dengan nama file video Anda
+        this.videoSize = '85 MB'; // Update sesuai ukuran file
+        this.videoDuration = '10:30'; // Update sesuai durasi video
+    }
+    
+    // Initialize video player
+    initVideoPlayer() {
+        console.log('🎬 Initializing video player...');
+        
+        const videoContainer = document.getElementById('videoPlayer');
+        if (!videoContainer) {
+            console.error('Video container not found');
+            return;
+        }
+        
+        // Create video element
+        this.video = document.createElement('video');
+        this.video.id = 'tutorialVideo';
+        this.video.className = 'tutorial-video';
+        this.video.preload = 'metadata';
+        this.video.poster = 'video-poster.jpg'; // Optional thumbnail
+        
+        // Create source element
+        const source = document.createElement('source');
+        source.src = this.videoUrl;
+        source.type = 'video/mp4';
+        
+        this.video.appendChild(source);
+        
+        // Fallback message
+        const fallback = document.createElement('p');
+        fallback.textContent = 'Browser Anda tidak mendukung tag video.';
+        fallback.style.cssText = 'color: white; padding: 20px; text-align: center;';
+        this.video.appendChild(fallback);
+        
+        // Replace loading indicator with video
+        const loading = document.getElementById('videoLoading');
+        if (loading) {
+            videoContainer.replaceChild(this.video, loading);
+        } else {
+            videoContainer.appendChild(this.video);
+        }
+        
+        // Setup event listeners
+        this.setupVideoEvents();
+        
+        // Update video info
+        this.updateVideoInfo();
+        
+        console.log('✅ Video player initialized');
+    }
+    
+    setupVideoEvents() {
+        if (!this.video) return;
+        
+        // Play/Pause
+        this.video.addEventListener('play', () => {
+            this.isPlaying = true;
+            this.updatePlayButton();
+        });
+        
+        this.video.addEventListener('pause', () => {
+            this.isPlaying = false;
+            this.updatePlayButton();
+        });
+        
+        // Time update
+        this.video.addEventListener('timeupdate', () => {
+            this.updateProgress();
+            this.updateTimeDisplay();
+        });
+        
+        // Loaded metadata
+        this.video.addEventListener('loadedmetadata', () => {
+            this.updateDurationDisplay();
+            this.updateVideoSize();
+        });
+        
+        // Volume change
+        this.video.addEventListener('volumechange', () => {
+            this.currentVolume = this.video.volume;
+            this.isMuted = this.video.muted;
+            this.updateVolumeControls();
+        });
+        
+        // Error handling
+        this.video.addEventListener('error', (e) => {
+            console.error('Video error:', e);
+            this.showVideoError();
+        });
+    }
+    
+    // Video control methods
+    videoPlayPause() {
+        if (!this.video) return;
+        
+        if (this.video.paused) {
+            this.video.play();
+        } else {
+            this.video.pause();
+        }
+    }
+    
+    toggleMute() {
+        if (!this.video) return;
+        
+        this.video.muted = !this.video.muted;
+    }
+    
+    changeVolume(value) {
+        if (!this.video) return;
+        
+        const volume = value / 100;
+        this.video.volume = volume;
+        this.video.muted = volume === 0;
+    }
+    
+    toggleFullscreen() {
+        const videoContainer = document.querySelector('.video-container');
+        if (!videoContainer) return;
+        
+        if (!document.fullscreenElement) {
+            videoContainer.requestFullscreen().catch(err => {
+                console.log('Fullscreen error:', err);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+    
+    seekVideo(event) {
+        if (!this.video) return;
+        
+        const progressBar = event.currentTarget;
+        const rect = progressBar.getBoundingClientRect();
+        const clickPosition = (event.clientX - rect.left) / rect.width;
+        
+        this.video.currentTime = clickPosition * this.video.duration;
+    }
+    
+    seekToTime(seconds) {
+        if (!this.video) return;
+        
+        this.video.currentTime = seconds;
+        this.video.play();
+    }
+    
+    downloadVideo() {
+        const link = document.createElement('a');
+        link.href = this.videoUrl;
+        link.download = 'UV-Guard-Tutorial.mp4';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    // UI update methods
+    updatePlayButton() {
+        const button = document.getElementById('playPauseBtn');
+        if (!button) return;
+        
+        const icon = button.querySelector('i');
+        if (icon) {
+            icon.className = this.isPlaying ? 'fas fa-pause' : 'fas fa-play';
+        }
+    }
+    
+    updateProgress() {
+        if (!this.video) return;
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            const percentage = (this.video.currentTime / this.video.duration) * 100;
+            progressFill.style.width = `${percentage}%`;
+        }
+    }
+    
+    updateTimeDisplay() {
+        if (!this.video) return;
+        
+        const currentTimeEl = document.getElementById('currentTime');
+        if (currentTimeEl) {
+            currentTimeEl.textContent = this.formatTime(this.video.currentTime);
+        }
+    }
+    
+    updateDurationDisplay() {
+        if (!this.video) return;
+        
+        const durationEl = document.getElementById('durationTime');
+        if (durationEl) {
+            durationEl.textContent = this.formatTime(this.video.duration);
+        }
+    }
+    
+    updateVolumeControls() {
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        
+        if (muteBtn) {
+            const icon = muteBtn.querySelector('i');
+            if (icon) {
+                icon.className = this.isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            }
+        }
+        
+        if (volumeSlider) {
+            volumeSlider.value = this.currentVolume * 100;
+        }
+    }
+    
+    updateVideoInfo() {
+        // Update video duration
+        const durationEl = document.getElementById('videoDuration');
+        if (durationEl) {
+            durationEl.textContent = this.videoDuration;
+        }
+        
+        // Update video size
+        const sizeEl = document.getElementById('videoSize');
+        if (sizeEl) {
+            sizeEl.textContent = `~${this.videoSize}`;
+        }
+    }
+    
+    updateVideoSize() {
+        // Fetch video file size
+        fetch(this.videoUrl, { method: 'HEAD' })
+            .then(response => {
+                const size = response.headers.get('content-length');
+                if (size) {
+                    const mb = (size / (1024 * 1024)).toFixed(1);
+                    this.videoSize = `${mb} MB`;
+                    
+                    const sizeEl = document.getElementById('videoSize');
+                    if (sizeEl) {
+                        sizeEl.textContent = `~${this.videoSize}`;
+                    }
+                }
+            })
+            .catch(() => {
+                // Use default size if fetch fails
+            });
+    }
+    
+    showVideoError() {
+        const videoContainer = document.getElementById('videoPlayer');
+        if (!videoContainer) return;
+        
+        videoContainer.innerHTML = `
+            <div class="video-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Video Tidak Dapat Dimuat</h3>
+                <p>Pastikan file video tersedia di folder yang sama dengan aplikasi.</p>
+                <p>Nama file harus: <code>${this.videoUrl}</code></p>
+                <button onclick="location.reload()" class="btn-primary">
+                    <i class="fas fa-redo"></i> Coba Lagi
+                </button>
+            </div>
+        `;
+    }
+    
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+}
+
 // ==================== GLOBAL INITIALIZATION ====================
 let app;
 
@@ -6063,3 +7282,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Juga coba inisialisasi jika element muncul belakangan
 setTimeout(createStaticHistoryChart, 3000);
+//CSV REAL-TIME
+document.getElementById("downloadRealtimeCSV").addEventListener("click", () => {
+
+    const data = {
+        waktu_download: new Date().toLocaleString(),
+        lokasi: document.getElementById("locationName")?.textContent || "-",
+        koordinat: document.getElementById("coordinatesText")?.textContent || "-",
+        uv_index: document.getElementById("currentUV")?.textContent || "-",
+        level_uv: document.getElementById("uvLevel")?.textContent || "-",
+        suhu: document.getElementById("temperature")?.textContent || "-",
+        terasa_seperti: document.getElementById("feelsLikeText")?.textContent || "-",
+        kelembapan: document.getElementById("humidity")?.textContent || "-",
+        tekanan: document.getElementById("pressureText")?.textContent || "-",
+        angin: document.getElementById("windText")?.textContent || "-",
+        awan: document.getElementById("cloudsText")?.textContent || "-",
+        kondisi_cuaca: document.getElementById("weatherCondition")?.textContent || "-",
+        sunrise: document.getElementById("sunriseText")?.textContent || "-",
+        sunset: document.getElementById("sunsetText")?.textContent || "-",
+        sumber_data: document.getElementById("dataSource")?.textContent || "-",
+        terakhir_update: document.getElementById("lastUpdate")?.textContent || "-"
+    };
+
+    let csv = "Field,Value\n";
+    for (const key in data) {
+        csv += `${key},${data[key]}\n`;
+    }
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "realtime_uv_data.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
+});

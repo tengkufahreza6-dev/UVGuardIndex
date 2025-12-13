@@ -28,27 +28,55 @@
 <body>
     <!-- Navigation -->
     <nav class="main-nav">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <i class="fas fa-sun"></i>
-                <span>UV Guard <strong>Index</strong></span>
-            </div>
-            <div class="nav-links">
-                <a href="#home" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="#analysis" class="nav-link"><i class="fas fa-chart-line"></i> Analisis</a>
-                <a href="#impact" class="nav-link"><i class="fas fa-leaf"></i> Dampak</a>
-                <a href="#recommendation" class="nav-link"><i class="fas fa-shield-alt"></i> Rekomendasi</a>
-                <a href="#education" class="nav-link"><i class="fas fa-graduation-cap"></i> Edukasi</a>
-            </div>
-            <div class="nav-time">
-                <i class="fas fa-clock"></i>
-                <span id="currentTime">--:--:--</span>
-            </div>
+    <div class="nav-container">
+        <div class="nav-brand">
+            <i class="fas fa-sun"></i>
+            <span>UV Guard <strong>Index</strong></span>
         </div>
-    </nav>
+        
+        <!-- NAVIGATION SIMPLE TANPA DROPDOWN -->
+        <div class="nav-links">
+            <!-- Dashboard -->
+            <a href="#dashboard" class="nav-link active">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            
+            <!-- Analisis (link ke #data-input) -->
+            <a href="#data-input" class="nav-link">
+                <i class="fas fa-chart-line"></i> Analisis
+            </a>
+            
+            <!-- Dampak -->
+            <a href="#dampak" class="nav-link">
+                <i class="fas fa-leaf"></i> Dampak
+            </a>
+            
+            <!-- Berjemur (link ke #berjemur) -->
+            <a href="#berjemur" class="nav-link">
+                <i class="fas fa-clock"></i> Berjemur
+            </a>
+            
+            <!-- Rekomendasi -->
+            <a href="#rekomendasi" class="nav-link">
+                <i class="fas fa-shield-alt"></i> Rekomendasi
+            </a>
+            
+            <!-- Edukasi -->
+            <a href="#edukasi" class="nav-link">
+                <i class="fas fa-graduation-cap"></i> Edukasi
+            </a>
+        </div>
+        
+        <div class="nav-time">
+            <i class="fas fa-clock"></i>
+            <span id="currentTime">--:--:--</span>
+        </div>
+    </div>
+</nav>
+
 
     <!-- Hero Section -->
-    <section class="hero" id="home">
+    <section class="hero" id="dashboard">
         <div class="hero-content">
             <h1 class="hero-title">
                 <span class="gradient-text">Analisis UV Index</span>
@@ -378,7 +406,7 @@
                         <!-- Control Buttons -->
                         <div class="control-buttons">
                             <button id="fetchData" class="btn-primary">
-                                <i class="fas fa-cloud-download-alt"></i> Ambil Data Sekarang
+                                <i class="fas fa-cloud-download-alt"></i> Ambil Data
                             </button>
                             <button id="startMonitoring" class="btn-secondary">
                                 <i class="fas fa-play-circle"></i> Mulai Monitoring
@@ -386,6 +414,11 @@
                             <button id="stopMonitoring" class="btn-danger" disabled>
                                 <i class="fas fa-stop-circle"></i> Stop
                             </button>
+                            <div class="download-realtime">
+                            <button id="downloadRealtimeCSV" class="btn-secondary">
+                                <i class="fas fa-download"></i> Download Data Real-time (CSV)
+                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -425,7 +458,7 @@
         </section>
 
         <!-- Section 2: Mathematical Analysis -->
-        <section class="section" id="analysis">
+        <section class="section" id="analisis">
             <div class="section-header">
                 <h2><i class="fas fa-chart-line"></i> Analisis Matematis </h2>
                 <div class="section-subtitle">
@@ -571,7 +604,7 @@
         </section>
 
         <!-- Section 3: UV Impact on Biology & Environment -->
-        <section class="section" id="impact">
+        <section class="section" id="dampak">
             <div class="section-header">
                 <h2><i class="fas fa-leaf"></i> Dampak UV pada Biologi & Lingkungan</h2>
                 <div class="section-subtitle">
@@ -760,7 +793,7 @@
         </section>
 
         <!-- Section 4: Sunbathing Duration & Activity Schedule -->
-        <section class="section" id="sunbathing">
+        <section class="section" id="berjemur">
             <div class="section-header">
                 <h2><i class="fas fa-clock"></i> Durasi Berjemur & Jadwal Aktivitas</h2>
                 <div class="section-subtitle">
@@ -1085,7 +1118,7 @@
         </section>
 
         <!-- Section 6: Recommendations & Protection -->
-        <section class="section" id="recommendation">
+        <section class="section" id="rekomendasi">
             <div class="section-header">
                 <h2><i class="fas fa-shield-alt"></i> Rekomendasi Perlindungan UV</h2>
                 <div class="section-subtitle">
@@ -1142,7 +1175,7 @@
         </section>
 
         <!-- Section 7: Educational Content -->
-        <section class="section" id="education">
+        <section class="section" id="edukasi">
             <div class="section-header">
                 <h2><i class="fas fa-graduation-cap"></i> Edukasi UV & Sinar Matahari</h2>
             </div>
