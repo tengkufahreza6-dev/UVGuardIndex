@@ -3526,3 +3526,53 @@ tbody tr:hover td {
 .uv-level-description h4 {
     text-align: center;
 }
+.uv-level-description {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 6px;
+}
+
+.uv-desc-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.uv-desc-header h4 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.uv-desc-header i {
+    transition: transform 0.3s ease;
+}
+
+.uv-desc-content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition:
+        max-height 0.4s ease,
+        opacity 0.3s ease,
+        margin-top 0.3s ease;
+    text-align: justify;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+
+.uv-desc-content.show {
+    max-height: 500px; /* cukup untuk isi teks kamu */
+    opacity: 1;
+    margin-top: 8px;
+}
+
+.uv-desc-header.active i {
+    transform: rotate(180deg);
+}

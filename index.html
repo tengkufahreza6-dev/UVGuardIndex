@@ -135,8 +135,15 @@
                     <div class="level high">Tinggi 6-7</div>
                     <div class="level very-high">Sangat Tinggi 8-10</div>
                     <div class="level extreme">Ekstrem 11+</div>
+
                     <div class="uv-level-description">
-    <h4>Klasifikasi Tingkat Risiko UV Index</h4>
+
+    <div class="uv-desc-header" onclick="toggleUVDescription()">
+        <h4>Klasifikasi Tingkat Risiko UV Index</h4>
+        <i id="uvDescIcon" class="fas fa-chevron-down"></i>
+    </div>
+
+    <div id="uvDescContent" class="uv-desc-content">
     <p>
         Berdasarkan tingkat risikonya, UV Index diklasifikasikan menjadi lima kategori:
         <strong>rendah (0–2)</strong>, <strong>sedang (3–5)</strong>, 

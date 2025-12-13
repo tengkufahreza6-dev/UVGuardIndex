@@ -7366,3 +7366,12 @@ document.getElementById("downloadRealtimeCSV").addEventListener("click", () => {
     URL.revokeObjectURL(url);
 });
 
+function toggleUVDescription() {
+    const content = document.getElementById("uvDescContent");
+    const header = document.querySelector(".uv-desc-header");
+
+    if (!content || !header) return;
+
+    content.classList.toggle("show");
+    header.classList.toggle("active");
+}
