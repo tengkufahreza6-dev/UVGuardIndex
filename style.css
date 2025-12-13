@@ -3576,3 +3576,6 @@ tbody tr:hover td {
 .uv-desc-header.active i {
     transform: rotate(180deg);
 }
+#userGuideModal {
+    display: none;
+}
