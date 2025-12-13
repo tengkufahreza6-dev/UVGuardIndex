@@ -3499,3 +3499,30 @@ tbody tr:hover td {
 .nav-time i {
     color: #0066cc;
 }
+.uv-level-description {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #e0e0e0;
+}
+
+.uv-level-description h4 {
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    color: #ffffff;
+}
+
+.uv-level-description p {
+    margin-bottom: 6px;
+}
+.uv-level-description p {
+    text-align: justify;
+    text-justify: inter-word;
+}
+.uv-level-description h4 {
+    text-align: center;
+}

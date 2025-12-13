@@ -435,17 +435,7 @@ console.log("=".repeat(60));
                                     </ul>
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="app.closeUserGuide()">Tutup</button>
-                            <button class="btn btn-primary" onclick="app.printUserGuide()">
-                                <i class="fas fa-print"></i> Cetak Panduan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            
-                <div id="guideVideo" class="guide-tab">
+                            <div id="guideVideo" class="guide-tab">
     <h3><i class="fas fa-video"></i> Video Tutorial Penggunaan</h3>
     
     <!-- VIDEO PLAYER READY -->
@@ -570,6 +560,17 @@ console.log("=".repeat(60));
         </div>
     </div>
 </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="app.closeUserGuide()">Tutup</button>
+                            <button class="btn btn-primary" onclick="app.printUserGuide()">
+                                <i class="fas fa-print"></i> Cetak Panduan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            
+                
 `;
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -2716,7 +2717,6 @@ getFallbackTimezone(failedTimezone) {
 initCharts() {
     console.log("📊 Initializing charts...");
     
-    // UV Chart
     const uvCtx = document.getElementById('uvChart');
     if (!uvCtx) {
         console.error("❌ UV chart canvas not found!");
@@ -2744,11 +2744,12 @@ initCharts() {
                     backgroundColor: 'rgba(0, 102, 204, 0.1)',
                     borderWidth: 3,
                     fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
+                    tension: 0.3, // Kurangi tension untuk garis lebih tajam
+                    pointRadius: 5, // Perbesar titik
                     pointBackgroundColor: '#0066cc',
                     pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7 // Perbesar saat hover
                 }]
             },
             options: {
@@ -2763,7 +2764,13 @@ initCharts() {
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
                         callbacks: {
-                            label: (context) => `UV Index: ${context.parsed.y.toFixed(2)}`
+                            label: (context) => {
+                                const value = context.parsed.y;
+                                // Tampilkan 2 desimal untuk nilai kecil, 1 desimal untuk besar
+                                if (value < 1) return `UV Index: ${value.toFixed(2)}`;
+                                if (value < 10) return `UV Index: ${value.toFixed(1)}`;
+                                return `UV Index: ${Math.round(value)}`;
+                            }
                         }
                     }
                 },
@@ -2784,21 +2791,43 @@ initCharts() {
                             text: 'UV Index',
                             color: '#64748b'
                         },
-                        grid: { color: 'rgba(0,0,0,0.05)' },
-                        suggestedMin: 0, // TAMBAHKAN INI
-                        suggestedMax: 8, // KURANGI DARI 15 KE 8 (atau lebih rendah)
+                        grid: { 
+                            color: 'rgba(0,0,0,0.05)',
+                            drawBorder: true
+                        },
+                        // AWAL: Default range, nanti di-update dinamis
+                        suggestedMin: 0,
+                        suggestedMax: 10,
                         ticks: {
+                            // Fungsi callback untuk format ticks
                             callback: function(value) {
-                                // Tampilkan dengan 2 desimal untuk nilai kecil
+                                // Untuk nilai integer, tampilkan biasa
+                                if (Number.isInteger(value)) {
+                                    return value;
+                                }
+                                // Untuk nilai desimal kecil, tampilkan 1-2 desimal
                                 if (value < 1) {
                                     return value.toFixed(2);
-                                } else if (value < 10) {
+                                }
+                                if (value < 10) {
                                     return value.toFixed(1);
                                 }
-                                return value;
-                            }
+                                return Math.round(value);
+                            },
+                            // Auto-skip jika terlalu banyak
+                            autoSkip: true,
+                            maxTicksLimit: 10
                         }
                     }
+                },
+                elements: {
+                    line: {
+                        tension: 0.3 // Kurangi untuk garis lebih responsif
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 },
                 animation: {
                     duration: 1000,
@@ -2819,6 +2848,7 @@ initCharts() {
         console.error("❌ Error initializing UV chart:", error);
     }
 }
+
     
     // ========== NEW METHOD: Update Time Period dengan Timezone Tertentu ==========
 updateTimePeriodWithTimezone(timezone) {
@@ -5756,34 +5786,58 @@ updateRecommendations() {
     }
     
     updateTrendIndicator(currentRate) {
-        const trendElement = document.getElementById('trendIndicator');
-        const interpretationElement = document.getElementById('rateInterpretation');
-        
-        if (!trendElement || !interpretationElement) return;
-        
-        if (currentRate > 0.1) {
-            trendElement.innerHTML = '<i class="fas fa-arrow-up"></i> <span>Naik</span>';
-            trendElement.setAttribute('data-trend', 'up');
-            trendElement.style.background = 'rgba(255, 51, 0, 0.1)';
-            trendElement.style.color = '#ff3300';
-            interpretationElement.textContent = 
-                "UV Index sedang meningkat. Waspada terhadap peningkatan risiko.";
-        } else if (currentRate < -0.1) {
-            trendElement.innerHTML = '<i class="fas fa-arrow-down"></i> <span>Turun</span>';
-            trendElement.setAttribute('data-trend', 'down');
-            trendElement.style.background = 'rgba(0, 204, 136, 0.1)';
-            trendElement.style.color = '#00cc88';
-            interpretationElement.textContent = 
-                "UV Index sedang menurun. Kondisi akan semakin aman.";
-        } else {
-            trendElement.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Stabil</span>';
-            trendElement.setAttribute('data-trend', 'stable');
-            trendElement.style.background = 'rgba(255, 204, 0, 0.1)';
-            trendElement.style.color = '#ffcc00';
-            interpretationElement.textContent = 
-                "UV Index stabil. Tidak ada perubahan signifikan.";
-        }
+    const trendElement = document.getElementById('trendIndicator');
+    const interpretationElement = document.getElementById('rateInterpretation');
+    
+    if (!trendElement || !interpretationElement) return;
+
+    // Naik sangat cepat
+    if (currentRate >= 2) {
+        trendElement.innerHTML = '<i class="fas fa-arrow-up"></i> <span>Naik Cepat</span>';
+        trendElement.setAttribute('data-trend', 'up');
+        trendElement.style.background = 'rgba(255, 51, 0, 0.15)';
+        trendElement.style.color = '#ff3300';
+        interpretationElement.textContent =
+            "Indeks UV meningkat sangat cepat. Ini biasanya terjadi menjelang tengah hari dan menandakan lonjakan risiko paparan dalam waktu singkat. Aktivitas luar ruang tanpa perlindungan sangat tidak disarankan.";
+
+    // Naik sedang
+    } else if (currentRate >= 0.5) {
+        trendElement.innerHTML = '<i class="fas fa-arrow-up"></i> <span>Naik Bertahap</span>';
+        trendElement.setAttribute('data-trend', 'up');
+        trendElement.style.background = 'rgba(255, 153, 0, 0.15)';
+        trendElement.style.color = '#ff9900';
+        interpretationElement.textContent =
+            "Indeks UV sedang meningkat secara bertahap. Risiko paparan mulai naik, disarankan mulai menggunakan perlindungan seperti sunscreen atau topi.";
+
+    // Stabil
+    } else if (currentRate > -0.5 && currentRate < 0.5) {
+        trendElement.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Relatif Stabil</span>';
+        trendElement.setAttribute('data-trend', 'stable');
+        trendElement.style.background = 'rgba(255, 204, 0, 0.15)';
+        trendElement.style.color = '#ffcc00';
+        interpretationElement.textContent =
+            "Perubahan indeks UV relatif stabil. Tidak ada peningkatan atau penurunan risiko yang signifikan dalam waktu dekat.";
+
+    // Turun sedang
+    } else if (currentRate > -2) {
+        trendElement.innerHTML = '<i class="fas fa-arrow-down"></i> <span>Menurun</span>';
+        trendElement.setAttribute('data-trend', 'down');
+        trendElement.style.background = 'rgba(0, 204, 136, 0.15)';
+        trendElement.style.color = '#00cc88';
+        interpretationElement.textContent =
+            "Indeks UV mulai menurun. Risiko paparan berangsur berkurang, umumnya terjadi setelah melewati puncak siang hari.";
+
+    // Turun cepat
+    } else {
+        trendElement.innerHTML = '<i class="fas fa-arrow-down"></i> <span>Turun Cepat</span>';
+        trendElement.setAttribute('data-trend', 'down');
+        trendElement.style.background = 'rgba(0, 153, 102, 0.15)';
+        trendElement.style.color = '#009966';
+        interpretationElement.textContent =
+            "Indeks UV menurun dengan cepat. Risiko paparan berkurang secara signifikan, biasanya menjelang sore hari.";
     }
+}
+
     
     // ==================== SUNBATH CALCULATOR ====================
     calculateSunbathDuration() {
@@ -5873,29 +5927,14 @@ updateRecommendations() {
     updateCharts() {
     console.log("📈 Updating charts...");
     
-    const chartContainer = document.querySelector('.chart-container');
-    if (!chartContainer) {
-        console.error("Chart container not found!");
-        return;
-    }
-    
     if (!this.charts.uv) {
-        const uvCtx = document.getElementById('uvChart');
-        if (!uvCtx) {
-            console.error("Chart canvas not found!");
-            return;
-        }
-        
         this.initCharts();
-        if (!this.charts.uv) {
-            console.error("Failed to initialize chart!");
-            return;
-        }
+        return;
     }
     
     if (!this.dataHistory || this.dataHistory.length < 1) {
         this.charts.uv.data.labels = ['00:00', '06:00', '12:00', '18:00'];
-        this.charts.uv.data.datasets[0].data = [0, 5, 10, 5];
+        this.charts.uv.data.datasets[0].data = [0, 0, 0, 0];
         this.charts.uv.update();
         return;
     }
@@ -5913,63 +5952,70 @@ updateRecommendations() {
         
         const data = recentData.map(point => point.uvIndex);
         
-        console.log(`📊 Chart data: ${data.length} points, latest UV: ${data[data.length-1]}`);
+        console.log(`📊 Chart data: ${data.length} points, UV range: ${Math.min(...data).toFixed(2)} - ${Math.max(...data).toFixed(2)}`);
         
-        // ========== PERBAIKAN UTAMA DI SINI ==========
-        // Hitung range data yang lebih sensitif
+        // ========== LOGIKA SKALA DINAMIS ==========
         const minUV = Math.min(...data);
         const maxUV = Math.max(...data);
         const rangeUV = maxUV - minUV;
         
-        // Jika perubahan kecil (kurang dari 1), set range yang lebih sensitif
-        let suggestedMax;
-        if (rangeUV < 1) {
-            // Untuk perubahan kecil, beri margin 0.2 di atas nilai maksimum
+        let suggestedMin, suggestedMax;
+        
+        if (maxUV < 0.1) {
+            suggestedMin = 0;
+            suggestedMax = 0.2;
+        } else if (rangeUV < 1 && maxUV < 5) {
+            suggestedMin = Math.max(0, minUV - 0.1);
             suggestedMax = maxUV + 0.2;
-        } else if (rangeUV < 3) {
-            // Untuk perubahan sedang
-            suggestedMax = maxUV + (rangeUV * 0.3);
+        } else if (maxUV <= 10) {
+            suggestedMin = 0;
+            suggestedMax = Math.max(10, maxUV * 1.2);
+        } else if (maxUV <= 15) {
+            suggestedMin = 0;
+            suggestedMax = Math.max(15, maxUV * 1.15);
         } else {
-            // Untuk perubahan besar
-            suggestedMax = Math.max(8, maxUV * 1.3);
+            suggestedMin = 0;
+            suggestedMax = Math.max(20, maxUV * 1.1);
         }
         
-        // Pastikan suggestedMax minimal 1 jika ada data > 0
-        if (maxUV > 0 && suggestedMax < 1) {
-            suggestedMax = 1;
+        if (suggestedMax - suggestedMin < 0.5) {
+            suggestedMax = suggestedMin + 0.5;
         }
         
-        // Set min ke 0 atau sedikit di bawah min jika data tidak di 0
-        const suggestedMin = minUV > 0 ? Math.max(0, minUV - 0.1) : 0;
+        console.log(`📈 Dynamic scale: ${suggestedMin.toFixed(2)} to ${suggestedMax.toFixed(2)}`);
         
-        console.log(`📈 UV Range: ${minUV.toFixed(2)} - ${maxUV.toFixed(2)} (range: ${rangeUV.toFixed(2)})`);
-        console.log(`📈 Chart scale: ${suggestedMin.toFixed(2)} to ${suggestedMax.toFixed(2)}`);
+        // ========== WARNA DINAMIS BERDASARKAN UV LEVEL ==========
+        const backgroundColors = data.map(uv => {
+            const level = this.getUVLevel(uv);
+            // Transparan version dari warna UV level
+            switch(level.key) {
+                case 'low': return 'rgba(76, 175, 80, 0.1)'; // Hijau transparan
+                case 'moderate': return 'rgba(255, 193, 7, 0.1)'; // Kuning transparan
+                case 'high': return 'rgba(255, 152, 0, 0.1)'; // Orange transparan
+                case 'veryHigh': return 'rgba(244, 67, 54, 0.1)'; // Merah transparan
+                case 'extreme': return 'rgba(156, 39, 176, 0.1)'; // Ungu transparan
+                default: return 'rgba(0, 102, 204, 0.1)';
+            }
+        });
         
-        // Update skala chart
-        if (this.charts.uv.options.scales.y) {
-            this.charts.uv.options.scales.y.suggestedMin = suggestedMin;
-            this.charts.uv.options.scales.y.suggestedMax = suggestedMax;
-            
-            // Update ticks untuk tampilan yang lebih detail
-            this.charts.uv.options.scales.y.ticks = {
-                callback: function(value) {
-                    if (suggestedMax - suggestedMin < 2) {
-                        // Jika skala kecil, tampilkan dengan 2 desimal
-                        return value.toFixed(2);
-                    } else if (suggestedMax - suggestedMin < 5) {
-                        // Jika skala sedang, tampilkan dengan 1 desimal
-                        return value.toFixed(1);
-                    }
-                    return value;
-                }
-            };
-        }
+        const borderColors = data.map(uv => {
+            const level = this.getUVLevel(uv);
+            return level.color; // Warna solid dari UV level
+        });
+        
+        // ========== UPDATE DATA CHART ==========
+        this.charts.uv.options.scales.y.suggestedMin = suggestedMin;
+        this.charts.uv.options.scales.y.suggestedMax = suggestedMax;
         
         this.charts.uv.data.labels = labels;
         this.charts.uv.data.datasets[0].data = data;
+        this.charts.uv.data.datasets[0].backgroundColor = backgroundColors;
+        this.charts.uv.data.datasets[0].borderColor = borderColors;
         
+        // ========== UPDATE DENGAN ANIMASI ==========
         this.charts.uv.update('active');
-        console.log("✅ Chart updated successfully");
+        
+        console.log("✅ Chart updated with dynamic scaling and colors");
         
         this.updateHistoryTable();
         
@@ -7319,3 +7365,4 @@ document.getElementById("downloadRealtimeCSV").addEventListener("click", () => {
 
     URL.revokeObjectURL(url);
 });
+
