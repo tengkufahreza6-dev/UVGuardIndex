@@ -3579,3 +3579,8 @@ tbody tr:hover td {
 #userGuideModal {
     display: none;
 }
+@media (max-width: 768px) {
+    .show {
+        max-height: 200vh !important;
+    }
+}
