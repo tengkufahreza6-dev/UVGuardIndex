@@ -3584,3 +3584,23 @@ tbody tr:hover td {
         max-height: 200vh !important;
     }
 }
+/* FIX: teks dampak biologi agar rapi */
+@media (max-width: 768px) {
+
+    p {
+        word-break: normal;
+        overflow-wrap: normal;
+        hyphens: auto;
+    }
+
+}
+@media (max-width: 768px) {
+
+    main,
+    .container,
+    .content {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+}
