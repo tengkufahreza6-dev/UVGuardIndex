@@ -2744,12 +2744,12 @@ initCharts() {
                     backgroundColor: 'rgba(0, 102, 204, 0.1)',
                     borderWidth: 3,
                     fill: true,
-                    tension: 0.3, // Kurangi tension untuk garis lebih tajam
-                    pointRadius: 5, // Perbesar titik
+                    tension: 0.3,
+                    pointRadius: 5,
                     pointBackgroundColor: '#0066cc',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
-                    pointHoverRadius: 7 // Perbesar saat hover
+                    pointHoverRadius: 8
                 }]
             },
             options: {
@@ -2760,16 +2760,18 @@ initCharts() {
                     tooltip: {
                         mode: 'index',
                         intersect: false,
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
                         titleColor: '#ffffff',
                         bodyColor: '#ffffff',
+                        padding: 12,
                         callbacks: {
                             label: (context) => {
                                 const value = context.parsed.y;
-                                // Tampilkan 2 desimal untuk nilai kecil, 1 desimal untuk besar
-                                if (value < 1) return `UV Index: ${value.toFixed(2)}`;
-                                if (value < 10) return `UV Index: ${value.toFixed(1)}`;
-                                return `UV Index: ${Math.round(value)}`;
+                                // Display dengan precision yang tepat
+                                if (value < 0.1) return `UV: ${value.toFixed(3)}`;
+                                if (value < 1) return `UV: ${value.toFixed(2)}`;
+                                if (value < 10) return `UV: ${value.toFixed(1)}`;
+                                return `UV: ${Math.round(value)}`;
                             }
                         }
                     }
@@ -2780,49 +2782,81 @@ initCharts() {
                         title: {
                             display: true,
                             text: 'Waktu',
-                            color: '#64748b'
+                            color: '#64748b',
+                            font: { size: 12 }
                         },
-                        grid: { color: 'rgba(0,0,0,0.05)' }
+                        grid: { 
+                            color: 'rgba(0,0,0,0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#64748b',
+                            maxRotation: 0
+                        }
                     },
                     y: {
+                        type: 'linear',
                         beginAtZero: true,
                         title: {
                             display: true,
                             text: 'UV Index',
-                            color: '#64748b'
+                            color: '#64748b',
+                            font: { size: 12 }
                         },
                         grid: { 
                             color: 'rgba(0,0,0,0.05)',
-                            drawBorder: true
+                            drawBorder: false
                         },
-                        // AWAL: Default range, nanti di-update dinamis
-                        suggestedMin: 0,
-                        suggestedMax: 10,
+                        // DEFAULT VALUES - akan diupdate dinamis
+                        min: 0,
+                        max: 0.5,
                         ticks: {
-                            // Fungsi callback untuk format ticks
+                            color: '#64748b',
+                            // CRITICAL: Precision untuk nilai kecil
                             callback: function(value) {
-                                // Untuk nilai integer, tampilkan biasa
-                                if (Number.isInteger(value)) {
-                                    return value;
-                                }
-                                // Untuk nilai desimal kecil, tampilkan 1-2 desimal
-                                if (value < 1) {
+                                const range = this.max - this.min;
+                                
+                                // Jika range kecil (< 2), tampilkan 2 desimal
+                                if (range < 2) {
                                     return value.toFixed(2);
                                 }
-                                if (value < 10) {
+                                // Jika range sedang (2-5), tampilkan 1 desimal
+                                else if (range < 5) {
                                     return value.toFixed(1);
                                 }
+                                // Jika range besar, tampilkan integer
                                 return Math.round(value);
                             },
-                            // Auto-skip jika terlalu banyak
                             autoSkip: true,
-                            maxTicksLimit: 10
+                            maxTicksLimit: 8,
+                            // STEP SIZE CRITICAL untuk perubahan kecil
+                            stepSize: function(context) {
+                                const range = context.scale.max - context.scale.min;
+                                if (range < 1) return 0.1;     // Step 0.1 untuk range kecil
+                                if (range < 3) return 0.5;     // Step 0.5 untuk range sedang
+                                if (range < 10) return 1;      // Step 1 untuk range besar
+                                return 2;                      // Step 2 untuk range sangat besar
+                            }
+                        },
+                        // Batasi range minimal agar perubahan kecil terlihat
+                        afterDataLimits: function(scale) {
+                            const dataRange = scale.max - scale.min;
+                            // Jika data range terlalu kecil (< 0.5), perbesar
+                            if (dataRange < 0.5) {
+                                const center = (scale.max + scale.min) / 2;
+                                scale.min = Math.max(0, center - 0.3);
+                                scale.max = center + 0.3;
+                            }
                         }
                     }
                 },
                 elements: {
                     line: {
-                        tension: 0.3 // Kurangi untuk garis lebih responsif
+                        tension: 0.3
+                    },
+                    point: {
+                        hoverRadius: 8,
+                        hitRadius: 10
                     }
                 },
                 interaction: {
@@ -5932,14 +5966,22 @@ updateRecommendations() {
         return;
     }
     
-    if (!this.dataHistory || this.dataHistory.length < 1) {
+   if (!this.dataHistory || this.dataHistory.length < 1) {
+        // ========== FIX DI SINI ==========
         this.charts.uv.data.labels = ['00:00', '06:00', '12:00', '18:00'];
         this.charts.uv.data.datasets[0].data = [0, 0, 0, 0];
+        
+        // SET SCALE KE 0-0.5 SAAT DATA KOSONG
+        this.charts.uv.options.scales.y.min = 0;
+        this.charts.uv.options.scales.y.max = 0.5;
+        
         this.charts.uv.update();
+        console.log("📊 Chart reset to empty state (0-0.5 scale)");
         return;
     }
     
     try {
+        // Ambil data terbaru (12 titik terakhir)
         const recentData = this.dataHistory.slice(-12);
         const labels = recentData.map((point, index) => {
             try {
@@ -5952,77 +5994,102 @@ updateRecommendations() {
         
         const data = recentData.map(point => point.uvIndex);
         
-        console.log(`📊 Chart data: ${data.length} points, UV range: ${Math.min(...data).toFixed(2)} - ${Math.max(...data).toFixed(2)}`);
+        // Debug: Tampilkan data mentah
+        console.log('📊 Raw UV Data:', data.map((v, i) => `${labels[i]}: ${v}`).join(', '));
         
-        // ========== LOGIKA SKALA DINAMIS ==========
+        // ========== CALCULATE SMART SCALE ==========
         const minUV = Math.min(...data);
         const maxUV = Math.max(...data);
         const rangeUV = maxUV - minUV;
         
-        let suggestedMin, suggestedMax;
+        console.log(`📈 UV Stats: Min=${minUV.toFixed(3)}, Max=${maxUV.toFixed(3)}, Range=${rangeUV.toFixed(3)}`);
         
-        if (maxUV < 0.1) {
-            suggestedMin = 0;
-            suggestedMax = 0.2;
-        } else if (rangeUV < 1 && maxUV < 5) {
-            suggestedMin = Math.max(0, minUV - 0.1);
-            suggestedMax = maxUV + 0.2;
-        } else if (maxUV <= 10) {
-            suggestedMin = 0;
-            suggestedMax = Math.max(10, maxUV * 1.2);
-        } else if (maxUV <= 15) {
-            suggestedMin = 0;
-            suggestedMax = Math.max(15, maxUV * 1.15);
-        } else {
-            suggestedMin = 0;
-            suggestedMax = Math.max(20, maxUV * 1.1);
+        let chartMin, chartMax;
+        
+        // CASE 1: Semua data 0 atau sangat kecil
+        if (maxUV < 0.05) {
+            chartMin = 0;
+            chartMax = 0.1;
+        }
+        // CASE 2: Data dengan range sangat kecil (< 0.5)
+        else if (rangeUV < 0.5) {
+            // Untuk perubahan kecil, kita perlu zoom in
+            const center = (minUV + maxUV) / 2;
+            chartMin = Math.max(0, center - 0.3);
+            chartMax = center + 0.3;
+            
+            // Pastikan ada margin minimal
+            if (chartMax - chartMin < 0.1) {
+                chartMin = Math.max(0, center - 0.05);
+                chartMax = center + 0.05;
+            }
+        }
+        // CASE 3: Data normal dengan perubahan kecil-medium
+        else if (rangeUV < 3) {
+            chartMin = Math.max(0, minUV - (rangeUV * 0.2));
+            chartMax = maxUV + (rangeUV * 0.2);
+        }
+        // CASE 4: Data dengan range besar
+        else {
+            chartMin = 0;
+            chartMax = Math.max(maxUV * 1.1, 10);
         }
         
-        if (suggestedMax - suggestedMin < 0.5) {
-            suggestedMax = suggestedMin + 0.5;
+        // Pastikan chartMax tidak terlalu besar untuk data kecil
+        if (maxUV < 1 && chartMax > 1) {
+            chartMax = Math.min(1, maxUV * 2);
         }
         
-        console.log(`📈 Dynamic scale: ${suggestedMin.toFixed(2)} to ${suggestedMax.toFixed(2)}`);
+        // Pastikan ada perbedaan minimal antara min dan max
+        if (chartMax - chartMin < 0.05) {
+            chartMax = chartMin + 0.05;
+        }
         
-        // ========== WARNA DINAMIS BERDASARKAN UV LEVEL ==========
+        console.log(`📈 Chart Scale: ${chartMin.toFixed(3)} to ${chartMax.toFixed(3)}`);
+        
+        // ========== WARNA DINAMIS ==========
         const backgroundColors = data.map(uv => {
             const level = this.getUVLevel(uv);
-            // Transparan version dari warna UV level
             switch(level.key) {
-                case 'low': return 'rgba(76, 175, 80, 0.1)'; // Hijau transparan
-                case 'moderate': return 'rgba(255, 193, 7, 0.1)'; // Kuning transparan
-                case 'high': return 'rgba(255, 152, 0, 0.1)'; // Orange transparan
-                case 'veryHigh': return 'rgba(244, 67, 54, 0.1)'; // Merah transparan
-                case 'extreme': return 'rgba(156, 39, 176, 0.1)'; // Ungu transparan
-                default: return 'rgba(0, 102, 204, 0.1)';
+                case 'low': return 'rgba(76, 175, 80, 0.15)';
+                case 'moderate': return 'rgba(255, 193, 7, 0.15)';
+                case 'high': return 'rgba(255, 152, 0, 0.15)';
+                case 'veryHigh': return 'rgba(244, 67, 54, 0.15)';
+                case 'extreme': return 'rgba(156, 39, 176, 0.15)';
+                default: return 'rgba(0, 102, 204, 0.15)';
             }
         });
         
         const borderColors = data.map(uv => {
             const level = this.getUVLevel(uv);
-            return level.color; // Warna solid dari UV level
+            return level.color;
         });
         
-        // ========== UPDATE DATA CHART ==========
-        this.charts.uv.options.scales.y.suggestedMin = suggestedMin;
-        this.charts.uv.options.scales.y.suggestedMax = suggestedMax;
+        // ========== UPDATE CHART ==========
+        // Update skala Y-axis
+        this.charts.uv.options.scales.y.min = chartMin;
+        this.charts.uv.options.scales.y.max = chartMax;
         
+        // Update data dan warna
         this.charts.uv.data.labels = labels;
         this.charts.uv.data.datasets[0].data = data;
         this.charts.uv.data.datasets[0].backgroundColor = backgroundColors;
         this.charts.uv.data.datasets[0].borderColor = borderColors;
+        this.charts.uv.data.datasets[0].pointBackgroundColor = borderColors;
         
-        // ========== UPDATE DENGAN ANIMASI ==========
+        // Force update dengan option untuk recalculate scales
         this.charts.uv.update('active');
         
-        console.log("✅ Chart updated with dynamic scaling and colors");
+        console.log("✅ Chart updated with smart scaling");
         
+        // Update history table juga
         this.updateHistoryTable();
         
     } catch (error) {
         console.error("❌ Error updating charts:", error);
     }
 }
+
     
     updateChartRange(hours) {
         if (!this.charts.uv || !this.dataHistory.length) return;
