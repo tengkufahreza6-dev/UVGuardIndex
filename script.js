@@ -440,93 +440,17 @@ console.log("=".repeat(60));
     
     <!-- VIDEO PLAYER READY -->
     <div class="video-container">
-        <div class="video-player" id="videoPlayer">
-            <!-- Video element akan diinisialisasi oleh JavaScript -->
-            <div class="video-loading" id="videoLoading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Memuat video tutorial...</p>
-            </div>
-        </div>
-        
-        <!-- VIDEO CONTROLS -->
-        <div class="video-controls">
-            <button class="control-btn" onclick="app.videoPlayPause()" id="playPauseBtn">
-                <i class="fas fa-play"></i>
-            </button>
-            
-            <div class="time-display">
-                <span id="currentTime">0:00</span> / 
-                <span id="durationTime">0:00</span>
-            </div>
-            
-            <div class="progress-container">
-                <div class="progress-bar" onclick="app.seekVideo(event)">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-            </div>
-            
-            <button class="control-btn" onclick="app.toggleMute()" id="muteBtn">
-                <i class="fas fa-volume-up"></i>
-            </button>
-            
-            <input type="range" min="0" max="100" value="100" 
-                   oninput="app.changeVolume(this.value)" id="volumeSlider">
-            
-            <button class="control-btn" onclick="app.toggleFullscreen()" id="fullscreenBtn">
-                <i class="fas fa-expand"></i>
-            </button>
-            
-            <button class="control-btn" onclick="app.downloadVideo()">
-                <i class="fas fa-download"></i>
-            </button>
-        </div>
-    </div>
-    
-    <!-- VIDEO CHAPTERS -->
-    <div class="video-chapters">
-        <h4><i class="fas fa-list-ol"></i> Chapters:</h4>
-        <div class="chapters-grid">
-            <button class="chapter-btn" onclick="app.seekToTime(0)">
-                <div class="chapter-icon">▶️</div>
-                <div class="chapter-content">
-                    <strong>00:00</strong>
-                    <small>Pengenalan UV Guard Pro</small>
-                </div>
-            </button>
-            
-            <button class="chapter-btn" onclick="app.seekToTime(90)">
-                <div class="chapter-icon">📍</div>
-                <div class="chapter-content">
-                    <strong>01:30</strong>
-                    <small>Deteksi Lokasi Otomatis</small>
-                </div>
-            </button>
-            
-            <button class="chapter-btn" onclick="app.seekToTime(195)">
-                <div class="chapter-icon">🧮</div>
-                <div class="chapter-content">
-                    <strong>03:15</strong>
-                    <small>Kalkulator Berjemur</small>
-                </div>
-            </button>
-            
-            <button class="chapter-btn" onclick="app.seekToTime(345)">
-                <div class="chapter-icon">📊</div>
-                <div class="chapter-content">
-                    <strong>05:45</strong>
-                    <small>Analisis Matematis</small>
-                </div>
-            </button>
-            
-            <button class="chapter-btn" onclick="app.seekToTime(500)">
-                <div class="chapter-icon">💡</div>
-                <div class="chapter-content">
-                    <strong>08:20</strong>
-                    <small>Tips & Best Practices</small>
-                </div>
-            </button>
-        </div>
-    </div>
+        <div class="video-player">
+    <video
+        src="uv-guide-tutorial.mp4"
+        controls
+        preload="metadata"
+        poster="video-poster.jpg"
+        style="width:100%; max-width:100%; border-radius:12px;"
+    >
+        Browser Anda tidak mendukung video.
+    </video>
+</div>
     
     <!-- VIDEO INFO -->
     <div class="video-info-card">
@@ -534,7 +458,7 @@ console.log("=".repeat(60));
             <i class="fas fa-clock"></i>
             <div>
                 <strong>Durasi:</strong>
-                <span id="videoDuration">10:30 menit</span>
+                <span id="videoDuration">01:48 menit</span>
             </div>
         </div>
         <div class="info-item">
@@ -548,7 +472,7 @@ console.log("=".repeat(60));
             <i class="fas fa-file-download"></i>
             <div>
                 <strong>Ukuran:</strong>
-                <span id="videoSize">~85 MB</span>
+                <span id="videoSize">~20.8 MB</span>
             </div>
         </div>
         <div class="info-item">
@@ -568,9 +492,7 @@ console.log("=".repeat(60));
                             </button>
                         </div>
                     </div>
-                </div>
-            
-                
+                </div>       
 `;
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -894,8 +816,7 @@ const errorStyles = `
         font-family: 'Roboto Mono', monospace;
     }
 `;
-        const styles = `
-        styles += videoStyles;
+        const styles = videoStyles+`
             /* User Guide Modal */
             .modal {
                 display: none;
@@ -2882,6 +2803,7 @@ initCharts() {
         console.error("❌ Error initializing UV chart:", error);
     }
 }
+
 
     
     // ========== NEW METHOD: Update Time Period dengan Timezone Tertentu ==========
@@ -5966,7 +5888,7 @@ updateRecommendations() {
         return;
     }
     
-   if (!this.dataHistory || this.dataHistory.length < 1) {
+    if (!this.dataHistory || this.dataHistory.length < 1) {
         // ========== FIX DI SINI ==========
         this.charts.uv.data.labels = ['00:00', '06:00', '12:00', '18:00'];
         this.charts.uv.data.datasets[0].data = [0, 0, 0, 0];
@@ -6916,8 +6838,8 @@ class VideoTutorialController {
         this.isMuted = false;
         this.currentVolume = 1.0;
         this.videoUrl = 'uv-guide-tutorial.mp4'; // Nanti ganti dengan nama file video Anda
-        this.videoSize = '85 MB'; // Update sesuai ukuran file
-        this.videoDuration = '10:30'; // Update sesuai durasi video
+        this.videoSize = '20.8 MB'; // Update sesuai ukuran file
+        this.videoDuration = '01:46'; // Update sesuai durasi video
     }
     
     // Initialize video player

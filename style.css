@@ -3604,3 +3604,19 @@ tbody tr:hover td {
     }
 
 }
+.video-info-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.video-info-card .info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 220px;
+    background: #f8f9fa;
+    padding: 12px 14px;
+    border-radius: 10px;
+}
