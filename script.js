@@ -5229,7 +5229,6 @@ getTimezoneColor(timezone) {
 }
 
     // ==================== RECOMMENDATIONS WITH OUTFIT ====================
-// ==================== RECOMMENDATIONS WITH OUTFIT ====================
 updateRecommendations() {
     if (!this.currentData) return;
     
