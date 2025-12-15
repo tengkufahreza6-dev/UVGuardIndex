@@ -472,7 +472,7 @@ console.log("=".repeat(60));
             <i class="fas fa-file-download"></i>
             <div>
                 <strong>Ukuran:</strong>
-                <span id="videoSize">~20.8 MB</span>
+                <span id="videoSize">~10.9 MB</span>
             </div>
         </div>
         <div class="info-item">
@@ -486,7 +486,6 @@ console.log("=".repeat(60));
 </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="app.closeUserGuide()">Tutup</button>
                             <button class="btn btn-primary" onclick="app.printUserGuide()">
                                 <i class="fas fa-print"></i> Cetak Panduan
                             </button>
@@ -6838,8 +6837,8 @@ class VideoTutorialController {
         this.isMuted = false;
         this.currentVolume = 1.0;
         this.videoUrl = 'uv-guide-tutorial.mp4'; // Nanti ganti dengan nama file video Anda
-        this.videoSize = '20.8 MB'; // Update sesuai ukuran file
-        this.videoDuration = '01:46'; // Update sesuai durasi video
+        this.videoSize = '10.9 MB'; // Update sesuai ukuran file
+        this.videoDuration = '01:48'; // Update sesuai durasi video
     }
     
     // Initialize video player
